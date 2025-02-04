@@ -67,10 +67,15 @@ export default async function ProtectedPage() {
                                 className="pl-8"
                             />
                         </div>
-                        <Button variant="outline" className="w-full sm:w-auto">
-                            <Settings className="h-4 w-4 mr-2" />
-                            Settings
-                        </Button>
+                        <Link href={"/settings"}>
+                            <Button
+                                variant="outline"
+                                className="w-full sm:w-auto"
+                            >
+                                <Settings className="h-4 w-4 mr-2" />
+                                Settings
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -125,7 +130,8 @@ export default async function ProtectedPage() {
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2">
                                     {mockCourses.map((course) => (
                                         <Link
-                                            href={`/protected/courses/${course.id}`}
+                                            // href={`/protected/courses/${course.id}`}
+                                            href={"/"}
                                             key={course.id}
                                         >
                                             <Button
