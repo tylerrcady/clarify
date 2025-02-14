@@ -22,36 +22,32 @@ export default async function ProtectedPage() {
         return redirect("/sign-in");
     }
 
-    // Mock data remains the same
-    const mockCourses = [
-        {
-            id: 1,
-            code: "CS 2200",
-            name: "Systems and Networks",
-            unreadPosts: 5,
-        },
-        {
-            id: 2,
-            code: "CS 3510",
-            name: "Design & Analysis of Algorithms",
-            unreadPosts: 2,
-        },
-    ];
+    // Fetch user's profile with courses
+    const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("courses, is_admin")
+        .eq("id", user.id)
+        .single();
 
-    const mockRecentDiscussions = [
-        {
-            id: 1,
-            title: "Project 1 Clarification",
-            course: "CS 2200",
-            replies: 12,
-        },
-        {
-            id: 2,
-            title: "Midterm Review Questions",
-            course: "CS 3510",
-            replies: 8,
-        },
-    ];
+    // Fetch all courses
+    const { data: allCourses } = await supabase.from("courses").select("*");
+
+    // Filter courses based on user's enrollment and creation
+    const createdCourses =
+        allCourses?.filter((course) => course.creator_id === user.id) || [];
+
+    const enrolledCourses =
+        allCourses?.filter((course) =>
+            userProfile?.courses?.some(
+                (userCourse: any) =>
+                    userCourse.courseId === course.id &&
+                    course.creator_id !== user.id
+            )
+        ) || [];
+
+    // Calculate stats
+    const totalDiscussions = 0; // To be implemented
+    const unreadPosts = 0; // To be implemented
 
     return (
         <div className="flex-1 w-full">
@@ -128,10 +124,12 @@ export default async function ProtectedPage() {
                                     My Courses
                                 </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2">
-                                    {mockCourses.map((course) => (
+                                    {[
+                                        ...createdCourses,
+                                        ...enrolledCourses,
+                                    ].map((course) => (
                                         <Link
-                                            // href={`/protected/courses/${course.id}`}
-                                            href={"/"}
+                                            href={`/courses/${course.id}`}
                                             key={course.id}
                                         >
                                             <Button
@@ -142,22 +140,27 @@ export default async function ProtectedPage() {
                                                     <span className="truncate">
                                                         {course.code}
                                                     </span>
-                                                    {course.unreadPosts > 0 && (
+                                                    {course.creator_id ===
+                                                        user.id && (
                                                         <span className="bg-primary text-primary-foreground px-2 rounded-full text-xs">
-                                                            {course.unreadPosts}
+                                                            ★
                                                         </span>
                                                     )}
                                                 </div>
                                             </Button>
                                         </Link>
                                     ))}
-                                    <Button
-                                        variant="outline"
-                                        className="w-full justify-start"
-                                    >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Join Course
-                                    </Button>
+                                    {userProfile?.is_admin && (
+                                        <Link href="/settings">
+                                            <Button
+                                                variant="outline"
+                                                className="w-full justify-start"
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Create Course
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -165,92 +168,90 @@ export default async function ProtectedPage() {
 
                     {/* Main Content Area */}
                     <div className="lg:col-span-9 space-y-6">
-                        {/* Quick Stats - Grid for all screen sizes */}
+                        {/* Quick Stats */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="border rounded-lg p-4">
                                 <h4 className="text-sm font-medium text-muted-foreground">
                                     Active Courses
                                 </h4>
                                 <p className="text-2xl font-bold">
-                                    {mockCourses.length}
+                                    {createdCourses.length +
+                                        enrolledCourses.length}
                                 </p>
                             </div>
                             <div className="border rounded-lg p-4">
                                 <h4 className="text-sm font-medium text-muted-foreground">
-                                    Total Discussions
+                                    Created Courses
                                 </h4>
-                                <p className="text-2xl font-bold">24</p>
+                                <p className="text-2xl font-bold">
+                                    {createdCourses.length}
+                                </p>
                             </div>
                             <div className="border rounded-lg p-4">
                                 <h4 className="text-sm font-medium text-muted-foreground">
-                                    Unread Posts
+                                    Enrolled Courses
                                 </h4>
-                                <p className="text-2xl font-bold">7</p>
+                                <p className="text-2xl font-bold">
+                                    {enrolledCourses.length}
+                                </p>
                             </div>
                         </div>
 
-                        {/* Recent Discussions - Responsive Card Layout */}
-                        <div className="border rounded-lg">
-                            <div className="p-4 border-b">
-                                <h3 className="text-lg font-semibold">
-                                    Recent Discussions
-                                </h3>
-                            </div>
-                            <div className="divide-y">
-                                {mockRecentDiscussions.map((discussion) => (
-                                    <div
-                                        key={discussion.id}
-                                        className="p-4 hover:bg-muted/50"
-                                    >
-                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                                            <div>
+                        {/* Created Courses Section */}
+                        {createdCourses.length > 0 && (
+                            <div className="border rounded-lg">
+                                <div className="p-4 border-b">
+                                    <h3 className="text-lg font-semibold">
+                                        Created Courses
+                                    </h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
+                                    {createdCourses.map((course) => (
+                                        <Link
+                                            href={`/courses/${course.id}`}
+                                            key={course.id}
+                                        >
+                                            <div className="border rounded-lg p-4 hover:bg-muted/50">
                                                 <h4 className="font-medium">
-                                                    {discussion.title}
+                                                    {course.name}
                                                 </h4>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {discussion.course} •{" "}
-                                                    {discussion.replies} replies
+                                                    {course.code}
                                                 </p>
                                             </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="w-full sm:w-auto"
-                                            >
-                                                View Thread
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
-                        {/* AI Features Preview - Responsive Grid */}
-                        <div className="border rounded-lg p-4">
-                            <h3 className="text-lg font-semibold mb-4">
-                                AI-Powered Features
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="border rounded-lg p-4">
-                                    <h4 className="font-medium">
-                                        Smart Summaries
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Get AI-generated summaries of long
-                                        discussion threads
-                                    </p>
+                        {/* Enrolled Courses Section */}
+                        {enrolledCourses.length > 0 && (
+                            <div className="border rounded-lg">
+                                <div className="p-4 border-b">
+                                    <h3 className="text-lg font-semibold">
+                                        Enrolled Courses
+                                    </h3>
                                 </div>
-                                <div className="border rounded-lg p-4">
-                                    <h4 className="font-medium">
-                                        Knowledge Graph
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Visualize connections between related
-                                        topics
-                                    </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
+                                    {enrolledCourses.map((course) => (
+                                        <Link
+                                            href={`/courses/${course.id}`}
+                                            key={course.id}
+                                        >
+                                            <div className="border rounded-lg p-4 hover:bg-muted/50">
+                                                <h4 className="font-medium">
+                                                    {course.name}
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {course.code}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

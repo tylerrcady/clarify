@@ -228,22 +228,66 @@ export const rejectAdminRequestAction = async (formData: FormData) => {
     return encodedRedirect("success", "/settings", "Admin request rejected");
 };
 
+// In /my-app/app/actions.ts
 export const createCourseAction = async (formData: FormData) => {
     const supabase = await createClient();
     const courseCode = formData.get("courseCode")?.toString();
     const courseName = formData.get("courseName")?.toString();
 
-    const { error } = await supabase.from("courses").insert({
-        code: courseCode,
-        name: courseName,
-    });
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return encodedRedirect("error", "/settings", "Not authenticated");
+    }
+
+    // Create the course first
+    const { data: course, error } = await supabase
+        .from("courses")
+        .insert({
+            code: courseCode,
+            name: courseName,
+            creator_id: user.id,
+            members: [{ userId: user.id, role: "Creator" }],
+        })
+        .select()
+        .single();
 
     if (error) {
         return encodedRedirect("error", "/settings", "Failed to create course");
     }
+
+    // Get current courses array from profile
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("courses")
+        .eq("id", user.id)
+        .single();
+
+    // Create new courses array with the new course
+    const updatedCourses = [
+        ...(profile?.courses || []),
+        { courseId: course.id, role: "Creator" },
+    ];
+
+    // Update profile with new courses array
+    const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ courses: updatedCourses })
+        .eq("id", user.id);
+
+    if (updateError) {
+        return encodedRedirect(
+            "error",
+            "/settings",
+            "Failed to update profile"
+        );
+    }
+
     return encodedRedirect(
         "success",
-        "/settings",
+        "/protected",
         "Course created successfully"
     );
 };
