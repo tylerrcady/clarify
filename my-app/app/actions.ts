@@ -151,7 +151,6 @@ export const requestAdminAction = async (formData: FormData) => {
         );
     }
 
-    // Check for existing pending request
     const { data: existingRequest } = await supabase
         .from("admin_requests")
         .select("*")
@@ -167,7 +166,6 @@ export const requestAdminAction = async (formData: FormData) => {
         );
     }
 
-    // If no pending request exists, create new request
     const { error } = await supabase.from("admin_requests").insert({
         user_id: user.id,
         user_email: user.email,
@@ -193,7 +191,6 @@ export const approveAdminRequestAction = async (formData: FormData) => {
     const supabase = await createClient();
     const requestId = formData.get("requestId")?.toString();
 
-    // First get the request details
     const { data: request, error: requestError } = await supabase
         .from("admin_requests")
         .select("user_id")
@@ -204,7 +201,6 @@ export const approveAdminRequestAction = async (formData: FormData) => {
         return encodedRedirect("error", "/settings", "Request not found");
     }
 
-    // Update user profile to admin
     const { error: profileError } = await supabase
         .from("profiles")
         .update({ is_admin: true })
@@ -218,7 +214,6 @@ export const approveAdminRequestAction = async (formData: FormData) => {
         );
     }
 
-    // Update request status
     const { error: requestUpdateError } = await supabase
         .from("admin_requests")
         .update({ status: "approved" })
@@ -267,7 +262,6 @@ export const createCourseAction = async (formData: FormData) => {
         return encodedRedirect("error", "/settings", "Not authenticated");
     }
 
-    // Create the course
     const { data: course, error } = await supabase
         .from("courses")
         .insert({
@@ -283,7 +277,6 @@ export const createCourseAction = async (formData: FormData) => {
         return encodedRedirect("error", "/settings", "Failed to create course");
     }
 
-    // Check if user already has enrollments
     const { data: existingEnrollment } = await supabase
         .from("course_enrollments")
         .select("*")
@@ -291,7 +284,6 @@ export const createCourseAction = async (formData: FormData) => {
         .single();
 
     if (existingEnrollment) {
-        // Add to existing courses array
         const { error: updateError } = await supabase
             .from("course_enrollments")
             .update({
@@ -313,7 +305,6 @@ export const createCourseAction = async (formData: FormData) => {
             );
         }
     } else {
-        // Create new enrollment record
         const { error: insertError } = await supabase
             .from("course_enrollments")
             .insert({

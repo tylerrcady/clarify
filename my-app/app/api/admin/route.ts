@@ -22,7 +22,6 @@ export async function POST(request: Request) {
             .single();
 
         if (request) {
-            // Update profile with admin status
             await supabase
                 .from("profiles")
                 .update({ is_admin: true })

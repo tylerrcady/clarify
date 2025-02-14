@@ -17,7 +17,7 @@ export default function CoursePage({
     const [isUploading, setIsUploading] = useState(false);
     const [message, setMessage] = useState<Message | null>(null);
     const [members, setMembers] = useState(initialCourse?.members || []);
-    const formRef = useRef<HTMLFormElement>(null); // Add form reference
+    const formRef = useRef<HTMLFormElement>(null);
     const supabase = createClientComponentClient();
 
     const isCreator = initialCourse?.creator_id === user?.id;
@@ -42,7 +42,6 @@ export default function CoursePage({
                     success: `Successfully enrolled ${data.processed} students`,
                 });
 
-                // Refresh the members list
                 const { data: updatedCourse } = await supabase
                     .from("courses")
                     .select("members")
@@ -61,7 +60,6 @@ export default function CoursePage({
             setMessage({ error: "An unexpected error occurred" });
         } finally {
             setIsUploading(false);
-            // Reset the form using the ref
             formRef.current?.reset();
         }
     };
@@ -82,7 +80,7 @@ export default function CoursePage({
                         Course Enrollment
                     </h2>
                     <form
-                        ref={formRef} // Add the form reference here
+                        ref={formRef}
                         onSubmit={handleSubmit}
                         encType="multipart/form-data"
                     >

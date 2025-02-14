@@ -27,14 +27,12 @@ export default async function Settings({ searchParams }: SearchParams) {
         return redirect("/sign-in");
     }
 
-    // Fetch admin status from profiles table
     const { data: profile } = await supabase
         .from("profiles")
         .select("is_admin")
         .eq("id", user.id)
         .single();
 
-    // Fetch user's admin request status
     const { data: userAdminRequest } = await supabase
         .from("admin_requests")
         .select("*")
@@ -43,7 +41,6 @@ export default async function Settings({ searchParams }: SearchParams) {
         .limit(1)
         .single();
 
-    // Fetch pending admin requests
     const { data: adminRequests } = await supabase
         .from("admin_requests")
         .select("*")

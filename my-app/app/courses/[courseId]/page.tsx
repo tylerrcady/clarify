@@ -18,7 +18,6 @@ export default async function CoursePageWrapper({ params }: Params) {
         return redirect("/sign-in");
     }
 
-    // Fetch the course
     const { data: course } = await supabase
         .from("courses")
         .select("*, members")
@@ -29,11 +28,9 @@ export default async function CoursePageWrapper({ params }: Params) {
         return redirect("/protected");
     }
 
-    // Check if user is the creator
     const isCreator = course.creator_id === user.id;
 
     if (!isCreator) {
-        // If not creator, check if user is enrolled
         const { data: enrollment } = await supabase
             .from("course_enrollments")
             .select("courses")
@@ -45,7 +42,6 @@ export default async function CoursePageWrapper({ params }: Params) {
         );
 
         if (!isEnrolled) {
-            // User is neither creator nor enrolled
             return redirect("/protected");
         }
     }

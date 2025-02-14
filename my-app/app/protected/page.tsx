@@ -19,14 +19,6 @@ type Course = {
     creator_id: string;
 };
 
-type CourseEnrollment = {
-    email: string;
-    courses: Array<{
-        courseId: string;
-        role: string;
-    }>;
-};
-
 export default async function ProtectedPage() {
     const supabase = await createClient();
     const {
@@ -37,27 +29,23 @@ export default async function ProtectedPage() {
         return redirect("/sign-in");
     }
 
-    // Fetch user's admin status
     const { data: userProfile } = await supabase
         .from("profiles")
         .select("is_admin")
         .eq("id", user.id)
         .single();
 
-    // Fetch courses created by the user
     const { data: createdCourses = [] } = await supabase
         .from("courses")
         .select("*")
         .eq("creator_id", user.id);
 
-    // Fetch the user's enrollment data
     const { data: enrollment } = await supabase
         .from("course_enrollments")
         .select("*")
         .eq("email", user.email)
         .single();
 
-    // Fetch enrolled courses
     let enrolledCourses: Course[] = [];
     if (enrollment?.courses && enrollment.courses.length > 0) {
         const courseIds: string[] = enrollment.courses.map(
@@ -75,7 +63,6 @@ export default async function ProtectedPage() {
         }
     }
 
-    // The rest of your component remains the same...
     return (
         <div className="flex-1 w-full">
             {/* Top Navigation Bar - Responsive */}

@@ -18,7 +18,6 @@ type EnrollmentRow = {
 
 export async function POST(request: NextRequest) {
     try {
-        // Extract courseId from the request URL
         const url = new URL(request.nextUrl);
         const pathSegments = url.pathname.split("/");
         const courseId = pathSegments[pathSegments.indexOf("courses") + 1];
@@ -76,7 +75,6 @@ export async function POST(request: NextRequest) {
 
         for (const row of data) {
             const email = row.Email?.toLowerCase();
-            // Enhanced role assignment logic
             let role: string;
             const inputRole = row.Role?.toLowerCase()?.trim();
             if (inputRole === "ta") {
@@ -84,7 +82,7 @@ export async function POST(request: NextRequest) {
             } else if (inputRole === "teacher") {
                 role = "Teacher";
             } else {
-                role = "Student"; // Default case for any other role value
+                role = "Student";
             }
 
             if (email && !processedEmails.has(email)) {
@@ -103,10 +101,8 @@ export async function POST(request: NextRequest) {
                     );
 
                     if (existingCourseIndex === -1) {
-                        // Add course if it doesn't exist
                         updatedCourses.push({ courseId, role });
                     } else {
-                        // Update role if course exists
                         updatedCourses[existingCourseIndex].role = role;
                     }
 
@@ -121,15 +117,12 @@ export async function POST(request: NextRequest) {
                     });
                 }
 
-                // Handle course members
                 const existingMemberIndex = updatedMembers.findIndex(
                     (member) => member.email === email
                 );
                 if (existingMemberIndex === -1) {
-                    // Add new member
                     updatedMembers.push({ email, role });
                 } else {
-                    // Update existing member's role
                     updatedMembers[existingMemberIndex].role = role;
                 }
             }
