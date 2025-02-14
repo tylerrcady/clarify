@@ -3,9 +3,7 @@ import { redirect } from "next/navigation";
 import CoursePage from "./CoursePageClient";
 
 interface Params {
-    params: {
-        courseId: string;
-    };
+    params: Promise<{ courseId: string }>;
 }
 
 export default async function CoursePageWrapper({ params }: Params) {
