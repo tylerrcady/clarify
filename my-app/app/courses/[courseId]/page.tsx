@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 export default async function CoursePage(context: {
     params: { courseId: string };
 }) {
-    const params = await context.params; // Await the params object
-    const courseId = params.courseId; // Access courseId from awaited params
+    const params = await context.params;
+    const courseId = params.courseId;
 
     const supabase = await createClient();
     const {
@@ -20,13 +20,19 @@ export default async function CoursePage(context: {
 
     const { data: course } = await supabase
         .from("courses")
-        .select("*, members")
+        .select("*")
         .eq("id", courseId)
         .single();
 
     if (!course) {
         return redirect("/protected");
     }
+
+    // Get course enrollments
+    const { data: enrollments } = await supabase
+        .from("course_enrollments")
+        .select("*")
+        .eq("course_id", courseId);
 
     const isCreator = course.creator_id === user.id;
 
@@ -63,13 +69,13 @@ export default async function CoursePage(context: {
                         Course Members
                     </h2>
                     <div className="space-y-2">
-                        {course.members?.map((member: any) => (
+                        {enrollments?.map((enrollment) => (
                             <div
-                                key={member.userId}
+                                key={enrollment.id}
                                 className="flex justify-between items-center p-2 border rounded"
                             >
-                                <span>{member.userId}</span>
-                                <span>{member.role}</span>
+                                <span>{enrollment.email}</span>
+                                <span>{enrollment.role}</span>
                             </div>
                         ))}
                     </div>

@@ -228,7 +228,6 @@ export const rejectAdminRequestAction = async (formData: FormData) => {
     return encodedRedirect("success", "/settings", "Admin request rejected");
 };
 
-// In /my-app/app/actions.ts
 export const createCourseAction = async (formData: FormData) => {
     const supabase = await createClient();
     const courseCode = formData.get("courseCode")?.toString();
@@ -242,14 +241,13 @@ export const createCourseAction = async (formData: FormData) => {
         return encodedRedirect("error", "/settings", "Not authenticated");
     }
 
-    // Create the course first
+    // Create the course
     const { data: course, error } = await supabase
         .from("courses")
         .insert({
             code: courseCode,
             name: courseName,
             creator_id: user.id,
-            members: [{ userId: user.id, role: "Creator" }],
         })
         .select()
         .single();
@@ -258,30 +256,20 @@ export const createCourseAction = async (formData: FormData) => {
         return encodedRedirect("error", "/settings", "Failed to create course");
     }
 
-    // Get current courses array from profile
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("courses")
-        .eq("id", user.id)
-        .single();
+    // Add creator to course_enrollments
+    const { error: enrollmentError } = await supabase
+        .from("course_enrollments")
+        .insert({
+            email: user.email,
+            course_id: course.id,
+            role: "Creator",
+        });
 
-    // Create new courses array with the new course
-    const updatedCourses = [
-        ...(profile?.courses || []),
-        { courseId: course.id, role: "Creator" },
-    ];
-
-    // Update profile with new courses array
-    const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ courses: updatedCourses })
-        .eq("id", user.id);
-
-    if (updateError) {
+    if (enrollmentError) {
         return encodedRedirect(
             "error",
             "/settings",
-            "Failed to update profile"
+            "Failed to set course creator"
         );
     }
 

@@ -31,7 +31,7 @@ export async function POST(
 
         const { data: course } = await supabase
             .from("courses")
-            .select("creator_id, members")
+            .select("creator_id")
             .eq("id", courseId)
             .single();
 
@@ -60,58 +60,22 @@ export async function POST(
         for (const row of data as any[]) {
             const email = row.email;
 
-            const { data: userData } = await supabase
-                .from("profiles")
-                .select("id")
-                .eq("email", email)
-                .single();
-
-            if (userData) {
-                const currentMembers = course.members || [];
-                const newMember = { userId: userData.id, role: "Student" };
-
-                const isExistingMember = currentMembers.some(
-                    (member: any) => member.userId === userData.id
-                );
-
-                if (!isExistingMember) {
-                    const updatedMembers = [...currentMembers, newMember];
-
-                    const { error: updateError } = await supabase
-                        .from("courses")
-                        .update({ members: updatedMembers })
-                        .eq("id", courseId);
-
-                    if (updateError) {
-                        console.error(
-                            `Error adding user ${email}:`,
-                            updateError
-                        );
-                        continue;
-                    }
-
-                    const { data: profile } = await supabase
-                        .from("profiles")
-                        .select("courses")
-                        .eq("id", userData.id)
-                        .single();
-
-                    const userCourses = profile?.courses || [];
-                    const isInUserCourses = userCourses.some(
-                        (course: any) => course.courseId === courseId
+            if (email) {
+                const { error } = await supabase
+                    .from("course_enrollments")
+                    .upsert(
+                        {
+                            email: email.toLowerCase(),
+                            course_id: courseId,
+                            role: "Student",
+                        },
+                        {
+                            onConflict: "email,course_id",
+                        }
                     );
 
-                    if (!isInUserCourses) {
-                        const updatedCourses = [
-                            ...userCourses,
-                            { courseId: courseId, role: "Student" },
-                        ];
-
-                        await supabase
-                            .from("profiles")
-                            .update({ courses: updatedCourses })
-                            .eq("id", userData.id);
-                    }
+                if (error) {
+                    console.error(`Error enrolling ${email}:`, error);
                 }
             }
         }
