@@ -2,11 +2,13 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import CoursePage from "./CoursePageClient";
 
-export default async function CoursePageWrapper({
-    params,
-}: {
-    params: { courseId: string };
-}) {
+interface Params {
+    params: {
+        courseId: string;
+    };
+}
+
+export default async function CoursePageWrapper({ params }: Params) {
     const { courseId } = await params;
 
     const supabase = await createClient();
