@@ -2,13 +2,17 @@ import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import * as xlsx from "xlsx";
 
-export async function POST(
-    request: NextRequest,
-    context: { params: { courseId: string } }
-) {
+export async function POST(request: NextRequest) {
     try {
-        const params = context.params;
-        const courseId = params.courseId;
+        const url = new URL(request.url);
+        const courseId = url.pathname.split("/").at(-2);
+
+        if (!courseId) {
+            return NextResponse.json(
+                { error: "Course ID not found in URL" },
+                { status: 400 }
+            );
+        }
 
         const supabase = await createClient();
 
