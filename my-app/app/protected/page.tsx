@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-// Define types for our data structures
 type Course = {
     id: string;
     name: string;
@@ -20,10 +19,12 @@ type Course = {
     creator_id: string;
 };
 
-type Enrollment = {
-    course_id: string;
-    role: string;
-    courses: Course;
+type CourseEnrollment = {
+    email: string;
+    courses: Array<{
+        courseId: string;
+        role: string;
+    }>;
 };
 
 export default async function ProtectedPage() {
@@ -36,7 +37,7 @@ export default async function ProtectedPage() {
         return redirect("/sign-in");
     }
 
-    // Fetch user's admin status only
+    // Fetch user's admin status
     const { data: userProfile } = await supabase
         .from("profiles")
         .select("is_admin")
@@ -44,38 +45,37 @@ export default async function ProtectedPage() {
         .single();
 
     // Fetch courses created by the user
-    const { data: createdCourses = [] } = (await supabase
+    const { data: createdCourses = [] } = await supabase
         .from("courses")
         .select("*")
-        .eq("creator_id", user.id)) as { data: Course[] | null };
+        .eq("creator_id", user.id);
 
-    // Fetch courses where the user is enrolled via email
-    const { data: enrollments = [] } = (await supabase
+    // Fetch the user's enrollment data
+    const { data: enrollment } = await supabase
         .from("course_enrollments")
-        .select(
-            `
-            course_id,
-            role,
-            courses (*)
-        `
-        )
-        .eq("email", user.email)) as { data: Enrollment[] | null };
+        .select("*")
+        .eq("email", user.email)
+        .single();
 
-    // Process enrolled courses, filtering out ones where user is creator
-    const enrolledCourses = (enrollments || [])
-        .filter(
-            (enrollment) =>
-                enrollment.courses && enrollment.courses.creator_id !== user.id
-        )
-        .map((enrollment) => ({
-            ...enrollment.courses,
-            role: enrollment.role,
-        }));
+    // Fetch enrolled courses
+    let enrolledCourses: Course[] = [];
+    if (enrollment?.courses && enrollment.courses.length > 0) {
+        const courseIds: string[] = enrollment.courses.map(
+            (c: { courseId: string; role: string }) => c.courseId
+        );
+        const { data: courses } = await supabase
+            .from("courses")
+            .select("*")
+            .in("id", courseIds);
 
-    // Calculate stats
-    const totalDiscussions = 0; // To be implemented
-    const unreadPosts = 0; // To be implemented
+        if (courses) {
+            enrolledCourses = courses.filter(
+                (course) => course.creator_id !== user.id
+            );
+        }
+    }
 
+    // The rest of your component remains the same...
     return (
         <div className="flex-1 w-full">
             {/* Top Navigation Bar - Responsive */}
@@ -153,7 +153,7 @@ export default async function ProtectedPage() {
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2">
                                     {[
                                         ...(createdCourses || []),
-                                        ...enrolledCourses,
+                                        ...(enrolledCourses || []),
                                     ].map((course) => (
                                         <Link
                                             href={`/courses/${course.id}`}
@@ -170,7 +170,7 @@ export default async function ProtectedPage() {
                                                     {course.creator_id ===
                                                         user.id && (
                                                         <span className="bg-primary text-primary-foreground px-2 rounded-full text-xs">
-                                                            Creator
+                                                            ★
                                                         </span>
                                                     )}
                                                 </div>
@@ -203,7 +203,7 @@ export default async function ProtectedPage() {
                                 </h4>
                                 <p className="text-2xl font-bold">
                                     {(createdCourses || []).length +
-                                        enrolledCourses.length}
+                                        (enrolledCourses || []).length}
                                 </p>
                             </div>
                             <div className="border rounded-lg p-4">
@@ -219,7 +219,7 @@ export default async function ProtectedPage() {
                                     Enrolled Courses
                                 </h4>
                                 <p className="text-2xl font-bold">
-                                    {enrolledCourses.length}
+                                    {(enrolledCourses || []).length}
                                 </p>
                             </div>
                         </div>
@@ -253,7 +253,7 @@ export default async function ProtectedPage() {
                         )}
 
                         {/* Enrolled Courses Section */}
-                        {enrolledCourses.length > 0 && (
+                        {(enrolledCourses || []).length > 0 && (
                             <div className="border rounded-lg">
                                 <div className="p-4 border-b">
                                     <h3 className="text-lg font-semibold">
@@ -261,7 +261,7 @@ export default async function ProtectedPage() {
                                     </h3>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
-                                    {enrolledCourses.map((course) => (
+                                    {(enrolledCourses || []).map((course) => (
                                         <Link
                                             href={`/courses/${course.id}`}
                                             key={course.id}

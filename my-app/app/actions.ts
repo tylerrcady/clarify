@@ -248,6 +248,7 @@ export const createCourseAction = async (formData: FormData) => {
             code: courseCode,
             name: courseName,
             creator_id: user.id,
+            members: [{ email: user.email, role: "Creator" }],
         })
         .select()
         .single();
@@ -256,21 +257,56 @@ export const createCourseAction = async (formData: FormData) => {
         return encodedRedirect("error", "/settings", "Failed to create course");
     }
 
-    // Add creator to course_enrollments
-    const { error: enrollmentError } = await supabase
+    // Check if user already has enrollments
+    const { data: existingEnrollment } = await supabase
         .from("course_enrollments")
-        .insert({
-            email: user.email,
-            course_id: course.id,
-            role: "Creator",
-        });
+        .select("*")
+        .eq("email", user.email)
+        .single();
 
-    if (enrollmentError) {
-        return encodedRedirect(
-            "error",
-            "/settings",
-            "Failed to set course creator"
-        );
+    if (existingEnrollment) {
+        // Add to existing courses array
+        const { error: updateError } = await supabase
+            .from("course_enrollments")
+            .update({
+                courses: [
+                    ...existingEnrollment.courses,
+                    {
+                        courseId: course.id,
+                        role: "Creator",
+                    },
+                ],
+            })
+            .eq("email", user.email);
+
+        if (updateError) {
+            return encodedRedirect(
+                "error",
+                "/settings",
+                "Failed to update course enrollments"
+            );
+        }
+    } else {
+        // Create new enrollment record
+        const { error: insertError } = await supabase
+            .from("course_enrollments")
+            .insert({
+                email: user.email,
+                courses: [
+                    {
+                        courseId: course.id,
+                        role: "Creator",
+                    },
+                ],
+            });
+
+        if (insertError) {
+            return encodedRedirect(
+                "error",
+                "/settings",
+                "Failed to create course enrollment"
+            );
+        }
     }
 
     return encodedRedirect(

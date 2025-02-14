@@ -20,7 +20,7 @@ export default async function CoursePage(context: {
 
     const { data: course } = await supabase
         .from("courses")
-        .select("*")
+        .select("*, members")
         .eq("id", courseId)
         .single();
 
@@ -28,11 +28,12 @@ export default async function CoursePage(context: {
         return redirect("/protected");
     }
 
-    // Get course enrollments
-    const { data: enrollments } = await supabase
+    // Get course enrollments for this user's email
+    const { data: enrollment } = await supabase
         .from("course_enrollments")
-        .select("*")
-        .eq("course_id", courseId);
+        .select("courses")
+        .eq("email", user.email)
+        .single();
 
     const isCreator = course.creator_id === user.id;
 
@@ -69,15 +70,20 @@ export default async function CoursePage(context: {
                         Course Members
                     </h2>
                     <div className="space-y-2">
-                        {enrollments?.map((enrollment) => (
-                            <div
-                                key={enrollment.id}
-                                className="flex justify-between items-center p-2 border rounded"
-                            >
-                                <span>{enrollment.email}</span>
-                                <span>{enrollment.role}</span>
-                            </div>
-                        ))}
+                        {course.members?.map(
+                            (
+                                member: { email: string; role: string },
+                                index: number
+                            ) => (
+                                <div
+                                    key={index}
+                                    className="flex justify-between items-center p-2 border rounded"
+                                >
+                                    <span>{member.email}</span>
+                                    <span>{member.role}</span>
+                                </div>
+                            )
+                        )}
                     </div>
                 </div>
             </div>
