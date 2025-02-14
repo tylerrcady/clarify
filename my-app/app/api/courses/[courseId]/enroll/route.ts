@@ -16,12 +16,12 @@ type EnrollmentRow = {
     "Total course activity": string;
 };
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: { courseId: string } }
-) {
+export async function POST(request: NextRequest) {
     try {
-        const courseId = params.courseId;
+        // Extract courseId from the request URL
+        const url = new URL(request.nextUrl);
+        const pathSegments = url.pathname.split("/");
+        const courseId = pathSegments[pathSegments.indexOf("courses") + 1];
 
         if (!courseId) {
             return NextResponse.json(
@@ -71,7 +71,6 @@ export async function POST(
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const data = xlsx.utils.sheet_to_json(worksheet) as EnrollmentRow[];
 
-        // Track processed emails and update course members
         const processedEmails = new Set<string>();
         let updatedMembers = [...(course.members || [])];
 
@@ -80,7 +79,6 @@ export async function POST(
             if (email && !processedEmails.has(email)) {
                 processedEmails.add(email);
 
-                // Check if email exists in course_enrollments
                 const { data: existingEnrollment } = await supabase
                     .from("course_enrollments")
                     .select("courses")
@@ -88,7 +86,6 @@ export async function POST(
                     .single();
 
                 if (existingEnrollment) {
-                    // Update existing enrollment
                     const updatedCourses = [...existingEnrollment.courses];
                     if (!updatedCourses.some((c) => c.courseId === courseId)) {
                         updatedCourses.push({ courseId, role: "Student" });
@@ -98,21 +95,18 @@ export async function POST(
                             .eq("email", email);
                     }
                 } else {
-                    // Create new enrollment
                     await supabase.from("course_enrollments").insert({
                         email,
                         courses: [{ courseId, role: "Student" }],
                     });
                 }
 
-                // Update course members if not already present
                 if (!updatedMembers.some((member) => member.email === email)) {
                     updatedMembers.push({ email, role: "Student" });
                 }
             }
         }
 
-        // Update course members
         await supabase
             .from("courses")
             .update({ members: updatedMembers })
