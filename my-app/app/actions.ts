@@ -144,9 +144,30 @@ export const requestAdminAction = async (formData: FormData) => {
     } = await supabase.auth.getUser();
 
     if (!user) {
-        return encodedRedirect("error", "/settings", "Not authenticated");
+        return encodedRedirect(
+            "error",
+            "/settings",
+            "You must be logged in to request admin access"
+        );
     }
 
+    // Check for existing pending request
+    const { data: existingRequest } = await supabase
+        .from("admin_requests")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "pending")
+        .single();
+
+    if (existingRequest) {
+        return encodedRedirect(
+            "error",
+            "/settings",
+            "You already have a pending admin request"
+        );
+    }
+
+    // If no pending request exists, create new request
     const { error } = await supabase.from("admin_requests").insert({
         user_id: user.id,
         user_email: user.email,
@@ -160,7 +181,12 @@ export const requestAdminAction = async (formData: FormData) => {
             "Failed to submit admin request"
         );
     }
-    return encodedRedirect("success", "/settings", "Admin request submitted");
+
+    return encodedRedirect(
+        "success",
+        "/settings",
+        "Admin request submitted successfully"
+    );
 };
 
 export const approveAdminRequestAction = async (formData: FormData) => {

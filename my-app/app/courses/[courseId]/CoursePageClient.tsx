@@ -117,7 +117,7 @@ export default function CoursePage({
                             ) => (
                                 <div
                                     key={index}
-                                    className="flex justify-between items-center p-2 border rounded"
+                                    className="flex flex-wrap justify-between items-center p-2 border rounded"
                                 >
                                     <span>{member.email}</span>
                                     <span>{member.role}</span>

@@ -10,8 +10,14 @@ import {
     createCourseAction,
 } from "@/app/actions";
 import Link from "next/link";
+import { FormMessage } from "@/components/form-message";
 
-export default async function Settings() {
+interface SearchParams {
+    searchParams: Promise<{ success: string; error: string }>;
+}
+
+export default async function Settings({ searchParams }: SearchParams) {
+    const { success, error } = await searchParams;
     const supabase = await createClient();
     const {
         data: { user },
@@ -26,6 +32,15 @@ export default async function Settings() {
         .from("profiles")
         .select("is_admin")
         .eq("id", user.id)
+        .single();
+
+    // Fetch user's admin request status
+    const { data: userAdminRequest } = await supabase
+        .from("admin_requests")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .single();
 
     // Fetch pending admin requests
@@ -47,6 +62,9 @@ export default async function Settings() {
                     </Button>
                 </Link>
             </div>
+
+            {/* Message Display */}
+            <FormMessage message={{ success, error }} />
 
             {/* User Information */}
             <div className="p-6 border rounded-lg shadow-sm">
@@ -91,13 +109,48 @@ export default async function Settings() {
                     <h2 className="text-xl font-semibold mb-4">
                         Request Admin Access
                     </h2>
-                    <form action={requestAdminAction}>
-                        <input type="hidden" name="userId" value={user.id} />
-                        <input type="hidden" name="email" value={user.email} />
-                        <Button variant="outline" type="submit">
-                            Request Admin Access
-                        </Button>
-                    </form>
+                    <div className="space-y-4">
+                        <form action={requestAdminAction}>
+                            <input
+                                type="hidden"
+                                name="userId"
+                                value={user.id}
+                            />
+                            <input
+                                type="hidden"
+                                name="email"
+                                value={user.email}
+                            />
+                            <Button
+                                variant="outline"
+                                type="submit"
+                                disabled={
+                                    userAdminRequest?.status === "pending"
+                                }
+                            >
+                                Request Admin Access
+                            </Button>
+                        </form>
+
+                        {userAdminRequest && (
+                            <div
+                                className={`p-4 rounded-md ${
+                                    userAdminRequest.status === "pending"
+                                        ? "bg-yellow-100 text-yellow-700"
+                                        : userAdminRequest.status === "approved"
+                                          ? "bg-green-100 text-green-700"
+                                          : "bg-red-100 text-red-700"
+                                }`}
+                            >
+                                {userAdminRequest.status === "pending" &&
+                                    "Your admin request is pending approval"}
+                                {userAdminRequest.status === "approved" &&
+                                    "Your admin request has been approved"}
+                                {userAdminRequest.status === "rejected" &&
+                                    "Your admin request was rejected"}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -111,7 +164,7 @@ export default async function Settings() {
                         {adminRequests.map((request) => (
                             <div
                                 key={request.id}
-                                className="flex items-center justify-between p-4 border rounded"
+                                className="flex flex-wrap items-center justify-between p-4 border rounded gap-2"
                             >
                                 <div className="mr-6">{request.user_email}</div>
                                 <div className="space-x-2">
