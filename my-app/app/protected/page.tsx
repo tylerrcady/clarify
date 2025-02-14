@@ -164,7 +164,7 @@ export default async function ProtectedPage() {
                                                 className="w-full justify-start"
                                             >
                                                 <div className="flex justify-between w-full items-center">
-                                                    <span className="truncate">
+                                                    <span className="truncate mr-2">
                                                         {course.code}
                                                     </span>
                                                     {course.creator_id ===
