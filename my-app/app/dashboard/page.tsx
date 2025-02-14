@@ -19,7 +19,7 @@ type Course = {
     creator_id: string;
 };
 
-export default async function ProtectedPage() {
+export default async function Dashboard() {
     const supabase = await createClient();
     const {
         data: { user },

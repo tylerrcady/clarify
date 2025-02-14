@@ -53,7 +53,7 @@ export default async function Settings({ searchParams }: SearchParams) {
         <div className="flex-1 w-full max-w-4xl p-4 space-y-8">
             <div className="flex justify-between border-b py-3">
                 <h1 className="text-2xl font-bold">Settings</h1>
-                <Link href={"/protected"}>
+                <Link href={"/dashboard"}>
                     <Button variant="outline" className="w-full sm:w-auto">
                         &larr;&nbsp;&nbsp;Back
                     </Button>

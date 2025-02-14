@@ -25,7 +25,7 @@ export default async function CoursePageWrapper({ params }: Params) {
         .single();
 
     if (!course) {
-        return redirect("/protected");
+        return redirect("/dashboard");
     }
 
     const isCreator = course.creator_id === user.id;
@@ -42,7 +42,7 @@ export default async function CoursePageWrapper({ params }: Params) {
         );
 
         if (!isEnrolled) {
-            return redirect("/protected");
+            return redirect("/dashboard");
         }
     }
 
