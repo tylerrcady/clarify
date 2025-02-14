@@ -76,6 +76,17 @@ export async function POST(request: NextRequest) {
 
         for (const row of data) {
             const email = row.Email?.toLowerCase();
+            // Enhanced role assignment logic
+            let role: string;
+            const inputRole = row.Role?.toLowerCase()?.trim();
+            if (inputRole === "ta") {
+                role = "TA";
+            } else if (inputRole === "teacher") {
+                role = "Teacher";
+            } else {
+                role = "Student"; // Default case for any other role value
+            }
+
             if (email && !processedEmails.has(email)) {
                 processedEmails.add(email);
 
@@ -87,22 +98,39 @@ export async function POST(request: NextRequest) {
 
                 if (existingEnrollment) {
                     const updatedCourses = [...existingEnrollment.courses];
-                    if (!updatedCourses.some((c) => c.courseId === courseId)) {
-                        updatedCourses.push({ courseId, role: "Student" });
-                        await supabase
-                            .from("course_enrollments")
-                            .update({ courses: updatedCourses })
-                            .eq("email", email);
+                    const existingCourseIndex = updatedCourses.findIndex(
+                        (c) => c.courseId === courseId
+                    );
+
+                    if (existingCourseIndex === -1) {
+                        // Add course if it doesn't exist
+                        updatedCourses.push({ courseId, role });
+                    } else {
+                        // Update role if course exists
+                        updatedCourses[existingCourseIndex].role = role;
                     }
+
+                    await supabase
+                        .from("course_enrollments")
+                        .update({ courses: updatedCourses })
+                        .eq("email", email);
                 } else {
                     await supabase.from("course_enrollments").insert({
                         email,
-                        courses: [{ courseId, role: "Student" }],
+                        courses: [{ courseId, role }],
                     });
                 }
 
-                if (!updatedMembers.some((member) => member.email === email)) {
-                    updatedMembers.push({ email, role: "Student" });
+                // Handle course members
+                const existingMemberIndex = updatedMembers.findIndex(
+                    (member) => member.email === email
+                );
+                if (existingMemberIndex === -1) {
+                    // Add new member
+                    updatedMembers.push({ email, role });
+                } else {
+                    // Update existing member's role
+                    updatedMembers[existingMemberIndex].role = role;
                 }
             }
         }
