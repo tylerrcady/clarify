@@ -130,21 +130,22 @@ export default async function Settings({ searchParams }: SearchParams) {
                         </form>
 
                         {userAdminRequest && (
-                            <div
-                                className={`p-4 rounded-md ${
-                                    userAdminRequest.status === "pending"
-                                        ? "bg-yellow-100 text-yellow-700"
-                                        : userAdminRequest.status === "approved"
-                                          ? "bg-green-100 text-green-700"
-                                          : "bg-red-100 text-red-700"
-                                }`}
-                            >
-                                {userAdminRequest.status === "pending" &&
-                                    "Your admin request is pending approval"}
-                                {userAdminRequest.status === "approved" &&
-                                    "Your admin request has been approved"}
-                                {userAdminRequest.status === "rejected" &&
-                                    "Your admin request was rejected"}
+                            <div className="flex flex-col gap-2 w-full max-w-md text-sm mt-2">
+                                {userAdminRequest.status === "pending" && (
+                                    <div className="text-yellow-700 border-l-2 border-yellow-700 px-4">
+                                        Your admin request is pending approval
+                                    </div>
+                                )}
+                                {userAdminRequest.status === "approved" && (
+                                    <div className="text-green-700 border-l-2 border-green-700 px-4">
+                                        Your admin request has been approved
+                                    </div>
+                                )}
+                                {userAdminRequest.status === "rejected" && (
+                                    <div className="text-red-700 border-l-2 border-red-700 px-4">
+                                        Your admin request was rejected
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
