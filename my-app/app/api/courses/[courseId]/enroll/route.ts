@@ -7,7 +7,7 @@ export async function POST(
     context: { params: { courseId: string } }
 ) {
     try {
-        const params = await context.params;
+        const params = context.params;
         const courseId = params.courseId;
 
         const supabase = await createClient();
