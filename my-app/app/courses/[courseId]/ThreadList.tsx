@@ -149,12 +149,6 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                     </Badge>
                                 ))}
                             </div>
-                            <div className="mt-4 text-sm text-muted-foreground">
-                                {typeof thread.comments === "object"
-                                    ? thread.comments.count
-                                    : thread.comments}{" "}
-                                comments
-                            </div>
                         </div>
                     </Link>
                 ))}
