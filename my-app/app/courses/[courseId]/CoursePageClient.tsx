@@ -1,9 +1,10 @@
 "use client";
-import { useState, useRef } from "react"; // Add useRef import
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage, Message } from "@/components/form-message";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import ThreadList from "./ThreadList";
 
 export default function CoursePage({
     initialCourse,
@@ -133,7 +134,7 @@ export default function CoursePage({
             <h1 className="text-2xl font-bold">
                 {initialCourse.name} ({initialCourse.code})
             </h1>
-            <p className="mt-4">Course content coming soon!</p>
+            <ThreadList courseId={courseId} />
         </div>
     );
 }
