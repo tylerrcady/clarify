@@ -1,5 +1,8 @@
 # Clarify
-CS 4365 Project
+CS 4365 Project: Clarify challenges the preconceptions of how a traditional educational forum operates and what
+it should provide. We take advantage of the reality of knowledge obsolescence and rejuvenation
+to stray from current leaders like Piazza and Ed Discussion, which abandon older, yet important
+information while obfuscating current up-to-date resources.
 ## Milestones
 ### Milestone 1: Authentication and Enrollment
 Integrate Canvas's roster export schema for seamless course setup and user authentication.
