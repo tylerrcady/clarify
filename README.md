@@ -13,4 +13,5 @@ Integrate Canvas's roster export schema for seamless course setup and user authe
 
 #### Database Schema:
 
-![supabase-schema-wjwkzdchclutfjdzlyaq (2)](https://github.com/user-attachments/assets/35b5bfea-774c-4f49-9df0-3dcdd8d2170f)
+![supabase-schema-wjwkzdchclutfjdzlyaq (3)](https://github.com/user-attachments/assets/dae9083b-a993-493e-ba23-38436acab602)
+
