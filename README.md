@@ -18,4 +18,13 @@ Cannot provide any real data for confidentiality, however, anyone with Canvas co
 #### Database Schema:
 This is the current database schema visualization for milestone 1.
 
-![supabase-schema-wjwkzdchclutfjdzlyaq (3)](https://github.com/user-attachments/assets/dae9083b-a993-493e-ba23-38436acab602)
+![database-schema](https://github.com/user-attachments/assets/7bdbb937-5853-46bb-8a5d-94057e40c9a4)
+
+
+#### Demo Figures:
+If you decide not to request admin privileges to view features, you can view the general flow below (blurred intentionally).
+
+![demo-figures](https://github.com/user-attachments/assets/11c504dc-da2c-4405-9cd2-a366875d8560)
+
+
+
