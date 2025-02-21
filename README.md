@@ -7,7 +7,7 @@ information, while obfuscating current up-to-date resources.
 ### Milestone 1: Authentication and Enrollment
 Integrate Canvas's roster export schema for seamless course setup and user authentication.
 #### Mock Canvas Roster Export Data:
-Cannot provide any real data for confidentiality, however, anyone with Canvas course access can acquire this file for their course.
+I cannot provide any real data for confidentiality, however, anyone with Canvas course access can acquire this file for their course.
 
 | Name              | Email                   | GT ID       | GT Account | Major(s) | Role    | Section(s) | Confidential? | Grade Mode   | Last Course Activity      | Total Course Activity |
 |------------------|------------------------|-------------|------------|----------|---------|------------|---------------|--------------|----------------------|-------------------|
