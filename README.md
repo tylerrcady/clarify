@@ -21,7 +21,7 @@ This is the current database schema visualization for milestone 1.
 ![database-schema](https://github.com/user-attachments/assets/7bdbb937-5853-46bb-8a5d-94057e40c9a4)
 
 
-#### Demo Figures:
+#### General Flow Figures:
 If you decide not to request admin privileges to view features, you can view the general flow below (blurred intentionally).
 
 ![demo-figures](https://github.com/user-attachments/assets/11c504dc-da2c-4405-9cd2-a366875d8560)
