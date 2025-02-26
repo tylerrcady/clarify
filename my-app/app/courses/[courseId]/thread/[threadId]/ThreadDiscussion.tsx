@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 interface Thread {
     id: string;
@@ -13,23 +15,30 @@ interface Thread {
     tags: string[];
 }
 
+interface Comment {
+    id: string;
+    anonymous_name: string;
+    creator_role: string;
+    created_at: string;
+    content: string;
+}
+
 export default function ThreadDiscussion({ thread }: { thread: Thread }) {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchComments = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch(`/api/threads/${thread.id}/comments`);
-            if (response.ok) {
-                const data = await response.json();
-                setComments(data.comments || []);
-            } else {
-                console.error("Failed to fetch comments");
-                setComments([]);
-            }
+            const data = await response.json();
+            setComments(data.comments);
         } catch (error) {
-            console.error("Failed to fetch comments:", error);
-            setComments([]);
+            console.error("Error fetching comments:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -37,87 +46,135 @@ export default function ThreadDiscussion({ thread }: { thread: Thread }) {
         fetchComments();
     }, [thread.id]);
 
-    interface Comment {
-        id: string;
-        anonymous_name: string;
-        creator_role: string;
-        created_at: string;
-        content: string;
-    }
-
-    const createComment = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmitComment = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const response = await fetch(`/api/threads/${thread.id}/comments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: newComment }),
-        });
+        setIsSubmitting(true);
 
-        if (response.ok) {
-            setNewComment("");
-            fetchComments();
+        try {
+            const response = await fetch(`/api/threads/${thread.id}/comments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: newComment }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setComments([...comments, data.comment]);
+                setNewComment("");
+                fetchComments();
+            }
+        } catch (error) {
+            console.error("Error posting comment:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="space-y-6 max-w-4xl mx-auto p-4">
-            <div className="p-6 border rounded-lg">
-                <div className="flex justify-between items-start">
+        <div className="space-y-6">
+            {/* Thread details */}
+            <div className="border rounded-lg p-4 bg-card">
+                <div className="flex justify-between items-start mb-2">
                     <h1 className="text-2xl font-bold">{thread.title}</h1>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{thread.creator_role}</span>
-                        <span>•</span>
-                        <span>
-                            {new Date(thread.created_at).toLocaleDateString()}
-                        </span>
+                    <div className="flex gap-2">
+                        {thread.tags &&
+                            thread.tags.map((tag) => (
+                                <Badge key={tag} variant="secondary">
+                                    {tag}
+                                </Badge>
+                            ))}
                     </div>
                 </div>
-                <p className="mt-4">{thread.content}</p>
-                <div className="mt-4 flex gap-2">
-                    {thread.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
-                            {tag}
-                        </Badge>
-                    ))}
+                <div className="text-sm text-muted-foreground mb-4">
+                    Posted by {thread.creator_role} •{" "}
+                    {new Date(thread.created_at).toLocaleDateString()}
                 </div>
+                <p className="whitespace-pre-wrap">{thread.content}</p>
             </div>
 
-            <div className="space-y-4">
-                {comments && comments.length > 0 ? (
-                    comments.map((comment) => (
-                        <div key={comment.id} className="p-4 border rounded-lg">
-                            <div className="flex justify-between items-start">
-                                <span className="font-medium">
-                                    {comment.anonymous_name}
-                                </span>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <span>{comment.creator_role}</span>
-                                    <span>•</span>
-                                    <span>
+            {/* Comments section */}
+            <div>
+                <h2 className="text-xl font-semibold mb-4">Comments</h2>
+
+                {isLoading ? (
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <div
+                                key={i}
+                                className="border rounded-lg p-4 space-y-2"
+                            >
+                                <div className="flex justify-between">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-4 w-24" />
+                                </div>
+                                <Skeleton className="h-16 w-full" />
+                            </div>
+                        ))}
+                    </div>
+                ) : comments.length > 0 ? (
+                    <div className="space-y-4">
+                        {comments.map((comment) => (
+                            <div
+                                key={comment.id}
+                                className="border rounded-lg p-4"
+                            >
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="font-medium">
+                                        {comment.anonymous_name || "Anonymous"}
+                                    </span>
+                                    <span className="text-sm text-muted-foreground">
                                         {new Date(
                                             comment.created_at
                                         ).toLocaleDateString()}
                                     </span>
                                 </div>
+                                <p className="whitespace-pre-wrap">
+                                    {comment.content}
+                                </p>
                             </div>
-                            <p className="mt-2">{comment.content}</p>
-                        </div>
-                    ))
+                        ))}
+                    </div>
                 ) : (
-                    <p className="text-muted-foreground">No comments yet</p>
+                    <p className="text-center py-8 text-muted-foreground">
+                        No comments yet. Be the first to comment!
+                    </p>
                 )}
-            </div>
 
-            <form onSubmit={createComment} className="space-y-4">
-                <textarea
-                    className="w-full min-h-[100px] p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    placeholder="Add a comment..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    required
-                />
-                <Button type="submit">Post Comment</Button>
-            </form>
+                {/* Comment form */}
+                <form onSubmit={handleSubmitComment} className="mt-6">
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="comment"
+                            className="text-sm font-medium"
+                        >
+                            Add a comment
+                        </label>
+                        <textarea
+                            id="comment"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Write your comment here..."
+                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            required
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        className="mt-2"
+                        disabled={isSubmitting || !newComment.trim()}
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Posting...
+                            </>
+                        ) : (
+                            "Post Comment"
+                        )}
+                    </Button>
+                </form>
+            </div>
         </div>
     );
 }
