@@ -54,7 +54,7 @@ export default function RootLayout({
                                     )}
                                 </div>
                             </nav>
-                            <div className="flex flex-col gap-20 max-w-5xl p-5 w-full">
+                            <div className="flex flex-col gap-20 p-5 w-full items-center max-w-5xl">
                                 {children}
                             </div>
 

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageSquare, PlusCircle } from "lucide-react";
 import { TagInput } from "@/components/TagInput";
 
 interface ThreadListProps {
@@ -77,6 +77,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
             console.error("Error creating thread:", error);
         } finally {
             setIsSubmitting(false);
+            setShowNewThread(false);
         }
     };
 
@@ -215,6 +216,21 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                         </div>
                     </Link>
                 ))}
+                {threads.length == 0 && (
+                    <div className="text-center py-12 border rounded-lg bg-muted/20">
+                        <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-medium mb-2">
+                            No discussions yet
+                        </h3>
+                        <p className="text-muted-foreground mb-6">
+                            Be the first to start a discussion in this course!
+                        </p>
+                        <Button onClick={() => setShowNewThread(true)}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Start a New Thread
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );
