@@ -1,11 +1,26 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, MessageSquare, PlusCircle } from "lucide-react";
+import {
+    Loader2,
+    MessageSquare,
+    PlusCircle,
+    MoreVertical,
+    Edit,
+    Trash,
+} from "lucide-react";
 import { TagInput } from "@/components/TagInput";
+import { createClient } from "@/utils/supabase/client";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ThreadListProps {
     courseId: string;
@@ -17,6 +32,7 @@ interface Thread {
     content: string;
     tags: string[];
     creator_role: string;
+    creator_id: string;
     created_at: string;
     comments: { count: number } | number;
 }
@@ -25,15 +41,27 @@ export default function ThreadList({ courseId }: ThreadListProps) {
     const [threads, setThreads] = useState<Thread[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showNewThread, setShowNewThread] = useState(false);
-    const [newThread, setNewThread] = useState({
-        title: "",
-        content: "",
-        tags: "",
-    });
     const [newThreadTitle, setNewThreadTitle] = useState("");
     const [newThreadContent, setNewThreadContent] = useState("");
     const [tags, setTags] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+    const [editThreadId, setEditThreadId] = useState<string | null>(null);
+    const [editedThreadTitle, setEditedThreadTitle] = useState("");
+    const [editedThreadContent, setEditedThreadContent] = useState("");
+    const [editedThreadTags, setEditedThreadTags] = useState<string[]>([]);
+    const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+
+    const fetchCurrentUser = async () => {
+        const supabase = createClient();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+            setCurrentUser(user.id);
+        }
+    };
 
     const fetchThreads = async () => {
         setIsLoading(true);
@@ -50,6 +78,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
 
     useEffect(() => {
         fetchThreads();
+        fetchCurrentUser();
     }, [courseId]);
 
     const handleCreateThread = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -78,6 +107,55 @@ export default function ThreadList({ courseId }: ThreadListProps) {
         } finally {
             setIsSubmitting(false);
             setShowNewThread(false);
+        }
+    };
+
+    const handleEditThread = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!editThreadId) return;
+
+        setIsEditSubmitting(true);
+        try {
+            const response = await fetch(`/api/threads/${editThreadId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: editedThreadTitle,
+                    content: editedThreadContent,
+                    tags: editedThreadTags,
+                }),
+            });
+
+            if (response.ok) {
+                fetchThreads();
+                setEditThreadId(null);
+            } else {
+                const error = await response.json();
+                console.error("Error updating thread:", error);
+            }
+        } catch (error) {
+            console.error("Error updating thread:", error);
+        } finally {
+            setIsEditSubmitting(false);
+        }
+    };
+
+    const handleDeleteThread = async (threadId: string) => {
+        if (!threadId) return;
+
+        try {
+            const response = await fetch(`/api/threads/${threadId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                fetchThreads();
+            } else {
+                const error = await response.json();
+                console.error("Error deleting thread:", error);
+            }
+        } catch (error) {
+            console.error("Error deleting thread:", error);
         }
     };
 
@@ -164,38 +242,121 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                         </p>
                     </div>
 
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full"
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Creating...
-                            </>
-                        ) : (
-                            "Create Thread"
-                        )}
-                    </Button>
+                    <div className="flex gap-2 justify-end">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowNewThread(false)}
+                            type="button"
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Creating...
+                                </>
+                            ) : (
+                                "Create Thread"
+                            )}
+                        </Button>
+                    </div>
+                </form>
+            )}
+
+            {editThreadId && (
+                <form
+                    onSubmit={handleEditThread}
+                    className="space-y-4 border rounded-lg p-4 bg-card"
+                >
+                    <h3 className="text-lg font-medium">Edit Thread</h3>
+
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="edit-title"
+                            className="text-sm font-medium"
+                        >
+                            Title
+                        </label>
+                        <Input
+                            id="edit-title"
+                            value={editedThreadTitle}
+                            onChange={(e) =>
+                                setEditedThreadTitle(e.target.value)
+                            }
+                            placeholder="Thread title"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="edit-content"
+                            className="text-sm font-medium"
+                        >
+                            Content
+                        </label>
+                        <textarea
+                            id="edit-content"
+                            value={editedThreadContent}
+                            onChange={(e) =>
+                                setEditedThreadContent(e.target.value)
+                            }
+                            placeholder="Thread content"
+                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="edit-tags"
+                            className="text-sm font-medium"
+                        >
+                            Tags
+                        </label>
+                        <TagInput
+                            tags={editedThreadTags}
+                            setTags={setEditedThreadTags}
+                            placeholder="Press Enter or comma to add tags"
+                        />
+                    </div>
+
+                    <div className="flex gap-2 justify-end">
+                        <Button
+                            variant="outline"
+                            onClick={() => setEditThreadId(null)}
+                            type="button"
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={isEditSubmitting}>
+                            {isEditSubmitting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Saving...
+                                </>
+                            ) : (
+                                "Save Changes"
+                            )}
+                        </Button>
+                    </div>
                 </form>
             )}
 
             <div className="space-y-4">
                 {threads.map((thread) => (
-                    <Link
-                        href={`/courses/${courseId}/thread/${thread.id}`}
-                        key={thread.id}
-                    >
-                        <div
-                            key={thread.id}
-                            className="p-4 border rounded-lg mt-4"
-                        >
-                            <div className="flex justify-between items-start">
-                                <h3 className="text-lg font-medium">
-                                    {thread.title}
-                                </h3>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div key={thread.id} className="p-4 border rounded-lg mt-4">
+                        <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                                <Link
+                                    href={`/courses/${courseId}/thread/${thread.id}`}
+                                >
+                                    <h3 className="text-lg font-medium hover:underline break-all">
+                                        {thread.title}
+                                    </h3>
+                                </Link>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
                                     <span>{thread.creator_role}</span>
                                     <span>•</span>
                                     <span>
@@ -205,16 +366,60 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                     </span>
                                 </div>
                             </div>
-                            <p className="mt-2">{thread.content}</p>
-                            <div className="mt-4 flex gap-2">
-                                {thread.tags.map((tag) => (
-                                    <Badge key={tag} variant="secondary">
-                                        {tag}
-                                    </Badge>
-                                ))}
-                            </div>
+                            {currentUser === thread.creator_id && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                            <MoreVertical className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                                setEditThreadId(thread.id);
+                                                setEditedThreadTitle(
+                                                    thread.title
+                                                );
+                                                setEditedThreadContent(
+                                                    thread.content
+                                                );
+                                                setEditedThreadTags(
+                                                    thread.tags || []
+                                                );
+                                            }}
+                                        >
+                                            <Edit className="mr-2 h-4 w-4" />
+                                            Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="text-destructive"
+                                            onClick={() => {
+                                                handleDeleteThread(thread.id);
+                                            }}
+                                        >
+                                            <Trash className="mr-2 h-4 w-4" />
+                                            Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                         </div>
-                    </Link>
+                        <Link href={`/courses/${courseId}/thread/${thread.id}`}>
+                            <p className="mt-2 break-all">{thread.content}</p>
+                            <div className="flex gap-2 flex-wrap">
+                                {thread.tags &&
+                                    thread.tags.map((tag) => (
+                                        <Badge
+                                            key={tag}
+                                            variant="secondary"
+                                            className="mt-2"
+                                        >
+                                            {tag}
+                                        </Badge>
+                                    ))}
+                            </div>
+                        </Link>
+                    </div>
                 ))}
                 {threads.length == 0 && (
                     <div className="text-center py-12 border rounded-lg bg-muted/20">

@@ -13,7 +13,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
     metadataBase: new URL(defaultUrl),
-    title: "Clariy",
+    title: "Clarify",
     description: "CS 4365 Project",
 };
 
