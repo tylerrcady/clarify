@@ -70,27 +70,27 @@ export function VoteButtons({ itemId, itemType, threadId }: VoteButtonsProps) {
     };
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-row items-center space-x-1 mt-2">
             <Button
                 variant="ghost"
                 size="icon"
-                className={cn("h-8 w-8", userVote === 1 && "text-green-500")}
+                className={cn("h-6 w-6", userVote === 1 && "text-green-500")}
                 onClick={() => handleVote(1)}
                 disabled={isLoading}
             >
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUp className="h-3 w-3" />
             </Button>
 
-            <span className="text-sm font-medium">{score}</span>
+            <span className="text-xs font-medium">{score}</span>
 
             <Button
                 variant="ghost"
                 size="icon"
-                className={cn("h-8 w-8", userVote === -1 && "text-red-500")}
+                className={cn("h-6 w-6", userVote === -1 && "text-red-500")}
                 onClick={() => handleVote(-1)}
                 disabled={isLoading}
             >
-                <ArrowDown className="h-4 w-4" />
+                <ArrowDown className="h-3 w-3" />
             </Button>
         </div>
     );

@@ -287,10 +287,6 @@ export default function ThreadDiscussion({
                     ) : (
                         <>
                             <div className="flex items-start">
-                                <VoteButtons
-                                    itemId={thread.id}
-                                    itemType="thread"
-                                />
                                 <div className="flex-1 ml-2">
                                     <div className="flex justify-between items-start mb-2">
                                         <h1 className="text-2xl font-bold">
@@ -346,18 +342,19 @@ export default function ThreadDiscussion({
                                         </div>
                                     </div>
                                     <div>
-                                        <div className="flex gap-2 flex-wrap">
-                                            {thread.tags &&
-                                                thread.tags.map((tag) => (
-                                                    <Badge
-                                                        key={tag}
-                                                        variant="secondary"
-                                                        className="mb-4"
-                                                    >
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                        </div>
+                                        {thread.tags &&
+                                            thread.tags.length > 0 && (
+                                                <div className="flex gap-2 flex-wrap mb-4">
+                                                    {thread.tags.map((tag) => (
+                                                        <Badge
+                                                            key={tag}
+                                                            variant="secondary"
+                                                        >
+                                                            {tag}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            )}
                                     </div>
                                     <div className="text-sm text-muted-foreground mb-4 break-all">
                                         Posted by {thread.creator_role} •{" "}
@@ -365,9 +362,17 @@ export default function ThreadDiscussion({
                                             thread.created_at
                                         ).toLocaleDateString()}
                                     </div>
-                                    <p className="whitespace-pre-wrap break-all">
-                                        {thread.content}
-                                    </p>
+                                    <div className="flex w-full flex-col">
+                                        <p className="whitespace-pre-wrap break-all">
+                                            {thread.content}
+                                        </p>
+                                        <div className="flex w-full justify-end">
+                                            <VoteButtons
+                                                itemId={thread.id}
+                                                itemType="thread"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </>
@@ -401,11 +406,6 @@ export default function ThreadDiscussion({
                                     className="border rounded-lg p-4"
                                 >
                                     <div className="flex">
-                                        <VoteButtons
-                                            itemId={comment.id}
-                                            itemType="comment"
-                                            threadId={thread.id}
-                                        />
                                         <div className="flex-1 ml-2">
                                             <div className="flex justify-between items-center mb-2 break-all">
                                                 <span className="font-medium">
@@ -505,9 +505,18 @@ export default function ThreadDiscussion({
                                                     </div>
                                                 </form>
                                             ) : (
-                                                <p className="whitespace-pre-wrap break-all">
-                                                    {comment.content}
-                                                </p>
+                                                <div className="flex w-full flex-col">
+                                                    <p className="whitespace-pre-wrap break-all">
+                                                        {comment.content}
+                                                    </p>{" "}
+                                                    <div className="flex w-full justify-end">
+                                                        <VoteButtons
+                                                            itemId={comment.id}
+                                                            itemType="comment"
+                                                            threadId={thread.id}
+                                                        />
+                                                    </div>
+                                                </div>
                                             )}
                                         </div>
                                     </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -265,179 +264,202 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                 </form>
             )}
 
-            {editThreadId && (
-                <form
-                    onSubmit={handleEditThread}
-                    className="space-y-4 border rounded-lg p-4 bg-card"
-                >
-                    <h3 className="text-lg font-medium">Edit Thread</h3>
-
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="edit-title"
-                            className="text-sm font-medium"
-                        >
-                            Title
-                        </label>
-                        <Input
-                            id="edit-title"
-                            value={editedThreadTitle}
-                            onChange={(e) =>
-                                setEditedThreadTitle(e.target.value)
-                            }
-                            placeholder="Thread title"
-                            required
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="edit-content"
-                            className="text-sm font-medium"
-                        >
-                            Content
-                        </label>
-                        <textarea
-                            id="edit-content"
-                            value={editedThreadContent}
-                            onChange={(e) =>
-                                setEditedThreadContent(e.target.value)
-                            }
-                            placeholder="Thread content"
-                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            required
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="edit-tags"
-                            className="text-sm font-medium"
-                        >
-                            Tags
-                        </label>
-                        <TagInput
-                            tags={editedThreadTags}
-                            setTags={setEditedThreadTags}
-                            placeholder="Press Enter or comma to add tags"
-                        />
-                    </div>
-
-                    <div className="flex gap-2 justify-end">
-                        <Button
-                            variant="outline"
-                            onClick={() => setEditThreadId(null)}
-                            type="button"
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={isEditSubmitting}>
-                            {isEditSubmitting ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Saving...
-                                </>
-                            ) : (
-                                "Save Changes"
-                            )}
-                        </Button>
-                    </div>
-                </form>
-            )}
-
             <div className="space-y-4">
                 {threads.map((thread) => (
-                    <div key={thread.id} className="p-4 border rounded-lg mt-4">
-                        <div className="flex items-start">
-                            <VoteButtons itemId={thread.id} itemType="thread" />
-                            <div className="flex-1 ml-3">
-                                <div className="flex justify-between items-start">
-                                    <div>
+                    <div key={thread.id}>
+                        {editThreadId != thread.id ? (
+                            <div className="p-4 border rounded-lg mt-4">
+                                <div className="flex items-start">
+                                    <div className="flex-1 ml-3">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <Link
+                                                    href={`/courses/${courseId}/thread/${thread.id}`}
+                                                >
+                                                    <h3 className="text-lg font-medium hover:underline break-all">
+                                                        {thread.title}
+                                                    </h3>
+                                                </Link>
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                                    <span>
+                                                        {thread.creator_role}
+                                                    </span>
+                                                    <span>•</span>
+                                                    <span>
+                                                        {new Date(
+                                                            thread.created_at
+                                                        ).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {currentUser ===
+                                                thread.creator_id && (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                setEditThreadId(
+                                                                    thread.id
+                                                                );
+                                                                setEditedThreadTitle(
+                                                                    thread.title
+                                                                );
+                                                                setEditedThreadContent(
+                                                                    thread.content
+                                                                );
+                                                                setEditedThreadTags(
+                                                                    thread.tags ||
+                                                                        []
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-destructive"
+                                                            onClick={() => {
+                                                                handleDeleteThread(
+                                                                    thread.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            )}
+                                        </div>
+
                                         <Link
                                             href={`/courses/${courseId}/thread/${thread.id}`}
                                         >
-                                            <h3 className="text-lg font-medium hover:underline break-all">
-                                                {thread.title}
-                                            </h3>
+                                            <p className="mt-2 break-all">
+                                                {thread.content}
+                                            </p>
+                                            {thread.tags &&
+                                                thread.tags.length > 0 && (
+                                                    <div className="flex gap-2 flex-wrap mt-4">
+                                                        {thread.tags.map(
+                                                            (tag) => (
+                                                                <Badge
+                                                                    key={tag}
+                                                                    variant="secondary"
+                                                                >
+                                                                    {tag}
+                                                                </Badge>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                )}
                                         </Link>
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
-                                            <span>{thread.creator_role}</span>
-                                            <span>•</span>
-                                            <span>
-                                                {new Date(
-                                                    thread.created_at
-                                                ).toLocaleDateString()}
-                                            </span>
+                                        <div className="flex w-full justify-end">
+                                            <VoteButtons
+                                                itemId={thread.id}
+                                                itemType="thread"
+                                            />
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <form
+                                onSubmit={handleEditThread}
+                                className="space-y-4 border rounded-lg p-4 bg-card"
+                            >
+                                <h3 className="text-lg font-medium">
+                                    Edit Thread
+                                </h3>
 
-                                    {currentUser === thread.creator_id && (
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                >
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setEditThreadId(
-                                                            thread.id
-                                                        );
-                                                        setEditedThreadTitle(
-                                                            thread.title
-                                                        );
-                                                        setEditedThreadContent(
-                                                            thread.content
-                                                        );
-                                                        setEditedThreadTags(
-                                                            thread.tags || []
-                                                        );
-                                                    }}
-                                                >
-                                                    <Edit className="mr-2 h-4 w-4" />
-                                                    Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    className="text-destructive"
-                                                    onClick={() => {
-                                                        handleDeleteThread(
-                                                            thread.id
-                                                        );
-                                                    }}
-                                                >
-                                                    <Trash className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    )}
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="edit-title"
+                                        className="text-sm font-medium"
+                                    >
+                                        Title
+                                    </label>
+                                    <Input
+                                        id="edit-title"
+                                        value={editedThreadTitle}
+                                        onChange={(e) =>
+                                            setEditedThreadTitle(e.target.value)
+                                        }
+                                        placeholder="Thread title"
+                                        required
+                                    />
                                 </div>
 
-                                <Link
-                                    href={`/courses/${courseId}/thread/${thread.id}`}
-                                >
-                                    <p className="mt-2 break-all">
-                                        {thread.content}
-                                    </p>
-                                    <div className="flex gap-2 flex-wrap">
-                                        {thread.tags &&
-                                            thread.tags.map((tag) => (
-                                                <Badge
-                                                    key={tag}
-                                                    variant="secondary"
-                                                    className="mt-2"
-                                                >
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                    </div>
-                                </Link>
-                            </div>
-                        </div>
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="edit-content"
+                                        className="text-sm font-medium"
+                                    >
+                                        Content
+                                    </label>
+                                    <textarea
+                                        id="edit-content"
+                                        value={editedThreadContent}
+                                        onChange={(e) =>
+                                            setEditedThreadContent(
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="Thread content"
+                                        className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="edit-tags"
+                                        className="text-sm font-medium"
+                                    >
+                                        Tags
+                                    </label>
+                                    <TagInput
+                                        tags={editedThreadTags}
+                                        setTags={setEditedThreadTags}
+                                        placeholder="Press Enter or comma to add tags"
+                                    />
+                                </div>
+
+                                <div className="flex gap-2 justify-end">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setEditThreadId(null)}
+                                        type="button"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={isEditSubmitting}
+                                    >
+                                        {isEditSubmitting ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            "Save Changes"
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 ))}
                 {threads.length == 0 && (
