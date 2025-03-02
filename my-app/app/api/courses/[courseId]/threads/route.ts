@@ -8,19 +8,36 @@ export async function GET(request: NextRequest) {
         const courseId = pathSegments[pathSegments.indexOf("courses") + 1];
 
         const supabase = await createClient();
-        const { data: threads } = await supabase
-            .from("threads")
-            .select(
-                `
-        *,
-        comments: comments(count),
-        anonymous_names: thread_anonymous_names(anonymous_name)
-      `
-            )
-            .eq("course_id", courseId)
-            .order("created_at", { ascending: false });
+        const { data: threads } = await supabase.rpc("get_threads_with_votes", {
+            course_id_param: courseId,
+        });
 
-        return NextResponse.json({ threads }, { status: 200 });
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        let userVotes: { [key: string]: string } = {};
+
+        if (user) {
+            const { data: votes } = await supabase
+                .from("thread_votes")
+                .select("thread_id, vote_type")
+                .eq("user_id", user.id);
+
+            if (votes) {
+                userVotes = votes.reduce(
+                    (
+                        acc: { [key: string]: string },
+                        vote: { thread_id: string; vote_type: string }
+                    ) => {
+                        acc[vote.thread_id] = vote.vote_type;
+                        return acc;
+                    },
+                    {}
+                );
+            }
+        }
+
+        return NextResponse.json({ threads, userVotes }, { status: 200 });
     } catch (error) {
         return NextResponse.json(
             { error: "Internal server error" },

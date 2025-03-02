@@ -21,6 +21,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { VoteButtons } from "@/components/VoteButtons";
 
 interface ThreadListProps {
     courseId: string;
@@ -347,78 +348,96 @@ export default function ThreadList({ courseId }: ThreadListProps) {
             <div className="space-y-4">
                 {threads.map((thread) => (
                     <div key={thread.id} className="p-4 border rounded-lg mt-4">
-                        <div className="flex justify-between items-start">
-                            <div className="flex-1">
+                        <div className="flex items-start">
+                            <VoteButtons itemId={thread.id} itemType="thread" />
+                            <div className="flex-1 ml-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <Link
+                                            href={`/courses/${courseId}/thread/${thread.id}`}
+                                        >
+                                            <h3 className="text-lg font-medium hover:underline break-all">
+                                                {thread.title}
+                                            </h3>
+                                        </Link>
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                            <span>{thread.creator_role}</span>
+                                            <span>•</span>
+                                            <span>
+                                                {new Date(
+                                                    thread.created_at
+                                                ).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {currentUser === thread.creator_id && (
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                >
+                                                    <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                    onClick={() => {
+                                                        setEditThreadId(
+                                                            thread.id
+                                                        );
+                                                        setEditedThreadTitle(
+                                                            thread.title
+                                                        );
+                                                        setEditedThreadContent(
+                                                            thread.content
+                                                        );
+                                                        setEditedThreadTags(
+                                                            thread.tags || []
+                                                        );
+                                                    }}
+                                                >
+                                                    <Edit className="mr-2 h-4 w-4" />
+                                                    Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="text-destructive"
+                                                    onClick={() => {
+                                                        handleDeleteThread(
+                                                            thread.id
+                                                        );
+                                                    }}
+                                                >
+                                                    <Trash className="mr-2 h-4 w-4" />
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    )}
+                                </div>
+
                                 <Link
                                     href={`/courses/${courseId}/thread/${thread.id}`}
                                 >
-                                    <h3 className="text-lg font-medium hover:underline break-all">
-                                        {thread.title}
-                                    </h3>
+                                    <p className="mt-2 break-all">
+                                        {thread.content}
+                                    </p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {thread.tags &&
+                                            thread.tags.map((tag) => (
+                                                <Badge
+                                                    key={tag}
+                                                    variant="secondary"
+                                                    className="mt-2"
+                                                >
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                    </div>
                                 </Link>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
-                                    <span>{thread.creator_role}</span>
-                                    <span>•</span>
-                                    <span>
-                                        {new Date(
-                                            thread.created_at
-                                        ).toLocaleDateString()}
-                                    </span>
-                                </div>
                             </div>
-                            {currentUser === thread.creator_id && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <MoreVertical className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem
-                                            onClick={() => {
-                                                setEditThreadId(thread.id);
-                                                setEditedThreadTitle(
-                                                    thread.title
-                                                );
-                                                setEditedThreadContent(
-                                                    thread.content
-                                                );
-                                                setEditedThreadTags(
-                                                    thread.tags || []
-                                                );
-                                            }}
-                                        >
-                                            <Edit className="mr-2 h-4 w-4" />
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            className="text-destructive"
-                                            onClick={() => {
-                                                handleDeleteThread(thread.id);
-                                            }}
-                                        >
-                                            <Trash className="mr-2 h-4 w-4" />
-                                            Delete
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
                         </div>
-                        <Link href={`/courses/${courseId}/thread/${thread.id}`}>
-                            <p className="mt-2 break-all">{thread.content}</p>
-                            <div className="flex gap-2 flex-wrap">
-                                {thread.tags &&
-                                    thread.tags.map((tag) => (
-                                        <Badge
-                                            key={tag}
-                                            variant="secondary"
-                                            className="mt-2"
-                                        >
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                            </div>
-                        </Link>
                     </div>
                 ))}
                 {threads.length == 0 && (

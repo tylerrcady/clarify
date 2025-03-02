@@ -15,6 +15,7 @@ import {
 import { TagInput } from "@/components/TagInput";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
+import { VoteButtons } from "@/components/VoteButtons";
 
 interface Thread {
     course_id: any;
@@ -285,78 +286,90 @@ export default function ThreadDiscussion({
                         </form>
                     ) : (
                         <>
-                            <div className="flex justify-between items-start mb-2">
-                                <h1 className="text-2xl font-bold">
-                                    {thread.title}
-                                </h1>
-                                <div className="flex items-center gap-2">
-                                    {currentUser === thread.creator_id && (
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                >
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setEditedThreadTitle(
-                                                            thread.title
-                                                        );
-                                                        setEditedThreadContent(
-                                                            thread.content
-                                                        );
-                                                        setEditedThreadTags(
-                                                            thread.tags || []
-                                                        );
-                                                        setIsEditingThread(
-                                                            true
-                                                        );
-                                                    }}
-                                                >
-                                                    <Edit className="mr-2 h-4 w-4" />
-                                                    Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    className="text-destructive"
-                                                    onClick={() =>
-                                                        handleDeleteThread()
-                                                    }
-                                                >
-                                                    <Trash className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    )}
+                            <div className="flex items-start">
+                                <VoteButtons
+                                    itemId={thread.id}
+                                    itemType="thread"
+                                />
+                                <div className="flex-1 ml-2">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h1 className="text-2xl font-bold">
+                                            {thread.title}
+                                        </h1>
+                                        <div className="flex items-center gap-2">
+                                            {currentUser ===
+                                                thread.creator_id && (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                setEditedThreadTitle(
+                                                                    thread.title
+                                                                );
+                                                                setEditedThreadContent(
+                                                                    thread.content
+                                                                );
+                                                                setEditedThreadTags(
+                                                                    thread.tags ||
+                                                                        []
+                                                                );
+                                                                setIsEditingThread(
+                                                                    true
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-destructive"
+                                                            onClick={() =>
+                                                                handleDeleteThread()
+                                                            }
+                                                        >
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {thread.tags &&
+                                                thread.tags.map((tag) => (
+                                                    <Badge
+                                                        key={tag}
+                                                        variant="secondary"
+                                                        className="mb-4"
+                                                    >
+                                                        {tag}
+                                                    </Badge>
+                                                ))}
+                                        </div>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground mb-4 break-all">
+                                        Posted by {thread.creator_role} •{" "}
+                                        {new Date(
+                                            thread.created_at
+                                        ).toLocaleDateString()}
+                                    </div>
+                                    <p className="whitespace-pre-wrap break-all">
+                                        {thread.content}
+                                    </p>
                                 </div>
                             </div>
-                            <div>
-                                <div className="flex gap-2 flex-wrap">
-                                    {thread.tags &&
-                                        thread.tags.map((tag) => (
-                                            <Badge
-                                                key={tag}
-                                                variant="secondary"
-                                                className="mb-4"
-                                            >
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                </div>
-                            </div>
-                            <div className="text-sm text-muted-foreground mb-4 break-all">
-                                Posted by {thread.creator_role} •{" "}
-                                {new Date(
-                                    thread.created_at
-                                ).toLocaleDateString()}
-                            </div>
-                            <p className="whitespace-pre-wrap break-all">
-                                {thread.content}
-                            </p>
                         </>
                     )}
                 </div>
@@ -387,101 +400,117 @@ export default function ThreadDiscussion({
                                     key={comment.id}
                                     className="border rounded-lg p-4"
                                 >
-                                    <div className="flex justify-between items-center mb-2 break-all">
-                                        <span className="font-medium">
-                                            {comment.anonymous_name ||
-                                                "Anonymous"}
-                                        </span>
-                                        <div className="flex items-center gap-2 break-all">
-                                            <span className="text-sm text-muted-foreground">
-                                                {new Date(
-                                                    comment.created_at
-                                                ).toLocaleDateString()}
-                                            </span>
-                                            {currentUser ===
-                                                comment.creator_id && (
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
+                                    <div className="flex">
+                                        <VoteButtons
+                                            itemId={comment.id}
+                                            itemType="comment"
+                                            threadId={thread.id}
+                                        />
+                                        <div className="flex-1 ml-2">
+                                            <div className="flex justify-between items-center mb-2 break-all">
+                                                <span className="font-medium">
+                                                    {comment.anonymous_name ||
+                                                        "Anonymous"}
+                                                </span>
+                                                <div className="flex items-center gap-2 break-all">
+                                                    <span className="text-sm text-muted-foreground">
+                                                        {new Date(
+                                                            comment.created_at
+                                                        ).toLocaleDateString()}
+                                                    </span>
+                                                    {currentUser ===
+                                                        comment.creator_id && (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                >
+                                                                    <MoreVertical className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem
+                                                                    onClick={() => {
+                                                                        setEditingCommentId(
+                                                                            comment.id
+                                                                        );
+                                                                        setEditedCommentContent(
+                                                                            comment.content
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <Edit className="mr-2 h-4 w-4" />
+                                                                    Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem
+                                                                    className="text-destructive"
+                                                                    onClick={() => {
+                                                                        handleDeleteComment(
+                                                                            comment.id
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <Trash className="mr-2 h-4 w-4" />
+                                                                    Delete
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {editingCommentId === comment.id ? (
+                                                <form
+                                                    onSubmit={() =>
+                                                        handleEditComment(
+                                                            comment.id
+                                                        )
+                                                    }
+                                                    className="space-y-2"
+                                                >
+                                                    <textarea
+                                                        value={
+                                                            editedCommentContent
+                                                        }
+                                                        onChange={(e) =>
+                                                            setEditedCommentContent(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                        required
+                                                    />
+                                                    <div className="flex justify-end gap-2">
                                                         <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                        >
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onClick={() => {
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() =>
                                                                 setEditingCommentId(
-                                                                    comment.id
-                                                                );
-                                                                setEditedCommentContent(
-                                                                    comment.content
-                                                                );
-                                                            }}
+                                                                    null
+                                                                )
+                                                            }
                                                         >
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Edit
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            className="text-destructive"
-                                                            onClick={() => {
-                                                                handleDeleteComment(
-                                                                    comment.id
-                                                                );
-                                                            }}
+                                                            <X className="h-4 w-4 mr-1" />{" "}
+                                                            Cancel
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            type="submit"
                                                         >
-                                                            <Trash className="mr-2 h-4 w-4" />
-                                                            Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                            <Check className="h-4 w-4 mr-1" />{" "}
+                                                            Save
+                                                        </Button>
+                                                    </div>
+                                                </form>
+                                            ) : (
+                                                <p className="whitespace-pre-wrap break-all">
+                                                    {comment.content}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
-                                    {editingCommentId === comment.id ? (
-                                        <form
-                                            onSubmit={() =>
-                                                handleEditComment(comment.id)
-                                            }
-                                            className="space-y-2"
-                                        >
-                                            <textarea
-                                                value={editedCommentContent}
-                                                onChange={(e) =>
-                                                    setEditedCommentContent(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                                required
-                                            />
-                                            <div className="flex justify-end gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() =>
-                                                        setEditingCommentId(
-                                                            null
-                                                        )
-                                                    }
-                                                >
-                                                    <X className="h-4 w-4 mr-1" />{" "}
-                                                    Cancel
-                                                </Button>
-                                                <Button size="sm" type="submit">
-                                                    <Check className="h-4 w-4 mr-1" />{" "}
-                                                    Save
-                                                </Button>
-                                            </div>
-                                        </form>
-                                    ) : (
-                                        <p className="whitespace-pre-wrap break-all">
-                                            {comment.content}
-                                        </p>
-                                    )}
                                 </div>
                             ))}
                         </div>
