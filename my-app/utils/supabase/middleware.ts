@@ -6,10 +6,8 @@ export const updateSession = async (request: NextRequest) => {
     // Feel free to remove once you have Supabase connected.
     try {
         // Create an unmodified response
-        let response = NextResponse.next({
-            request: {
-                headers: request.headers,
-            },
+        let supabaseResponse = NextResponse.next({
+            request,
         });
 
         const supabase = createServerClient(
@@ -21,14 +19,14 @@ export const updateSession = async (request: NextRequest) => {
                         return request.cookies.getAll();
                     },
                     setAll(cookiesToSet) {
-                        cookiesToSet.forEach(({ name, value }) =>
+                        cookiesToSet.forEach(({ name, value, options }) =>
                             request.cookies.set(name, value)
                         );
-                        response = NextResponse.next({
+                        supabaseResponse = NextResponse.next({
                             request,
                         });
                         cookiesToSet.forEach(({ name, value, options }) =>
-                            response.cookies.set(name, value, options)
+                            supabaseResponse.cookies.set(name, value, options)
                         );
                     },
                 },
@@ -48,7 +46,7 @@ export const updateSession = async (request: NextRequest) => {
             return NextResponse.redirect(new URL("/dashboard", request.url));
         }
 
-        return response;
+        return supabaseResponse;
     } catch (e) {
         // If you are here, a Supabase client could not be created!
         // This is likely because you have not set up environment variables.

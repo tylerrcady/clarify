@@ -324,3 +324,19 @@ export const createCourseAction = async (formData: FormData) => {
 
     return encodedRedirect("success", "/", "Course created successfully");
 };
+
+export const fetchUpdatedCourseMembers = async (courseId: string) => {
+    const supabase = await createClient();
+
+    const { data: updatedCourse, error } = await supabase
+        .from("courses")
+        .select("members")
+        .eq("id", courseId)
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return updatedCourse?.members || [];
+};

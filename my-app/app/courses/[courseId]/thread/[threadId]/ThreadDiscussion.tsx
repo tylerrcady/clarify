@@ -119,7 +119,7 @@ export default function ThreadDiscussion({
         const supabase = createClient();
         const {
             data: { user },
-        } = await supabase.auth.getUser();
+        } = await supabase.auth.getUser(); // only use this function in client components, use NO other await supabase.function()
         if (user) {
             setCurrentUser(user.id);
         }

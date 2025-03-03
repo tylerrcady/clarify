@@ -21,6 +21,7 @@ type Course = {
 
 export default async function Dashboard() {
     const supabase = await createClient();
+
     const {
         data: { user },
     } = await supabase.auth.getUser();

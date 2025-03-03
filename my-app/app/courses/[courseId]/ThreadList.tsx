@@ -13,7 +13,6 @@ import {
     Trash,
 } from "lucide-react";
 import { TagInput } from "@/components/TagInput";
-import { createClient } from "@/utils/supabase/client";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,6 +22,7 @@ import {
 import { VoteButtons } from "@/components/VoteButtons";
 
 interface ThreadListProps {
+    user: string;
     courseId: string;
 }
 
@@ -37,7 +37,7 @@ interface Thread {
     comments: { count: number } | number;
 }
 
-export default function ThreadList({ courseId }: ThreadListProps) {
+export default function ThreadList({ user, courseId }: ThreadListProps) {
     const [threads, setThreads] = useState<Thread[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showNewThread, setShowNewThread] = useState(false);
@@ -45,23 +45,13 @@ export default function ThreadList({ courseId }: ThreadListProps) {
     const [newThreadContent, setNewThreadContent] = useState("");
     const [tags, setTags] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [currentUser, setCurrentUser] = useState<string | null>(null);
+    const [currentUser, setCurrentUser] = useState<string | null>(user);
 
     const [editThreadId, setEditThreadId] = useState<string | null>(null);
     const [editedThreadTitle, setEditedThreadTitle] = useState("");
     const [editedThreadContent, setEditedThreadContent] = useState("");
     const [editedThreadTags, setEditedThreadTags] = useState<string[]>([]);
     const [isEditSubmitting, setIsEditSubmitting] = useState(false);
-
-    const fetchCurrentUser = async () => {
-        const supabase = createClient();
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-            setCurrentUser(user.id);
-        }
-    };
 
     const fetchThreads = async () => {
         setIsLoading(true);
@@ -78,7 +68,6 @@ export default function ThreadList({ courseId }: ThreadListProps) {
 
     useEffect(() => {
         fetchThreads();
-        fetchCurrentUser();
     }, [courseId]);
 
     const handleCreateThread = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -162,8 +151,8 @@ export default function ThreadList({ courseId }: ThreadListProps) {
     if (isLoading) {
         return (
             <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">Discussion Threads</h2>
+                <div className="flex justify-between items-center mt-2">
+                    <h2 className="text-xl font-bold">Discussions</h2>
                     <Skeleton className="h-10 w-32" />
                 </div>
                 {[1, 2, 3].map((i) => (
@@ -182,7 +171,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl font-bold">Discussions</h2>
                 <Button onClick={() => setShowNewThread(true)}>
                     New Thread

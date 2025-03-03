@@ -3,8 +3,8 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormMessage, Message } from "@/components/form-message";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import ThreadList from "./ThreadList";
+import { fetchUpdatedCourseMembers } from "@/app/actions";
 
 export default function CoursePage({
     initialCourse,
@@ -19,7 +19,6 @@ export default function CoursePage({
     const [message, setMessage] = useState<Message | null>(null);
     const [members, setMembers] = useState(initialCourse?.members || []);
     const formRef = useRef<HTMLFormElement>(null);
-    const supabase = createClientComponentClient();
 
     const isCreator = initialCourse?.creator_id === user?.id;
 
@@ -43,14 +42,11 @@ export default function CoursePage({
                     success: `Successfully enrolled ${data.processed} students`,
                 });
 
-                const { data: updatedCourse } = await supabase
-                    .from("courses")
-                    .select("members")
-                    .eq("id", courseId)
-                    .single();
+                const updatedMembers =
+                    await fetchUpdatedCourseMembers(courseId);
 
-                if (updatedCourse) {
-                    setMembers(updatedCourse.members);
+                if (updatedMembers) {
+                    setMembers(updatedMembers);
                 }
             } else {
                 setMessage({
@@ -134,7 +130,7 @@ export default function CoursePage({
             <h1 className="text-2xl font-bold">
                 {initialCourse.name} ({initialCourse.code})
             </h1>
-            <ThreadList courseId={courseId} />
+            <ThreadList user={user} courseId={courseId} />
         </div>
     );
 }
