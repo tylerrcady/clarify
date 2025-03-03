@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
                     .single();
 
                 if (existingEnrollment) {
+                    // allow course expansion by handling existing members
                     const updatedCourses = [...existingEnrollment.courses];
                     const existingCourseIndex = updatedCourses.findIndex(
                         (c) => c.courseId === courseId
