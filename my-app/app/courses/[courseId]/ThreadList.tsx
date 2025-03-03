@@ -223,7 +223,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                 setNewThreadContent(e.target.value)
                             }
                             placeholder="Thread content"
-                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                             required
                         />
                     </div>
@@ -417,7 +417,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                             )
                                         }
                                         placeholder="Thread content"
-                                        className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                                         required
                                     />
                                 </div>

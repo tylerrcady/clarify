@@ -292,7 +292,7 @@ export default function ThreadDiscussion({
                                         setEditedThreadContent(e.target.value)
                                     }
                                     placeholder="Thread content"
-                                    className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                                     required
                                 />
                             </div>
@@ -542,7 +542,7 @@ export default function ThreadDiscussion({
                                                                         .value
                                                                 )
                                                             }
-                                                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                                                             required
                                                         />
                                                         <div className="flex justify-end gap-2">
@@ -648,7 +648,7 @@ export default function ThreadDiscussion({
                                                                     )
                                                                 }
                                                                 placeholder="Write your reply here..."
-                                                                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                                                                 required
                                                             />
                                                         </div>
@@ -781,7 +781,7 @@ export default function ThreadDiscussion({
                                                                                             .value
                                                                                     )
                                                                                 }
-                                                                                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                                                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                                                                                 required
                                                                             />
                                                                             <div className="flex justify-end gap-2">
@@ -854,7 +854,7 @@ export default function ThreadDiscussion({
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
                                 placeholder="Write your comment here..."
-                                className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                                 required
                             />
                         </div>
