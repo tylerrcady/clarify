@@ -130,7 +130,7 @@ export default function CoursePage({
             <h1 className="text-2xl font-bold">
                 {initialCourse.name} ({initialCourse.code})
             </h1>
-            <ThreadList user={user} courseId={courseId} />
+            <ThreadList courseId={courseId} />
         </div>
     );
 }

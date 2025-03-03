@@ -20,9 +20,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { VoteButtons } from "@/components/VoteButtons";
+import { createClient } from "@/utils/supabase/client";
 
 interface ThreadListProps {
-    user: string;
     courseId: string;
 }
 
@@ -37,7 +37,7 @@ interface Thread {
     comments: { count: number } | number;
 }
 
-export default function ThreadList({ user, courseId }: ThreadListProps) {
+export default function ThreadList({ courseId }: ThreadListProps) {
     const [threads, setThreads] = useState<Thread[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showNewThread, setShowNewThread] = useState(false);
@@ -45,13 +45,23 @@ export default function ThreadList({ user, courseId }: ThreadListProps) {
     const [newThreadContent, setNewThreadContent] = useState("");
     const [tags, setTags] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [currentUser, setCurrentUser] = useState<string | null>(user);
+    const [currentUser, setCurrentUser] = useState<string | null>(null);
 
     const [editThreadId, setEditThreadId] = useState<string | null>(null);
     const [editedThreadTitle, setEditedThreadTitle] = useState("");
     const [editedThreadContent, setEditedThreadContent] = useState("");
     const [editedThreadTags, setEditedThreadTags] = useState<string[]>([]);
     const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+
+    const fetchCurrentUser = async () => {
+        const supabase = createClient();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+            setCurrentUser(user.id);
+        }
+    };
 
     const fetchThreads = async () => {
         setIsLoading(true);
@@ -68,6 +78,7 @@ export default function ThreadList({ user, courseId }: ThreadListProps) {
 
     useEffect(() => {
         fetchThreads();
+        fetchCurrentUser();
     }, [courseId]);
 
     const handleCreateThread = async (e: React.FormEvent<HTMLFormElement>) => {
