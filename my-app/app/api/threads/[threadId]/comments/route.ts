@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
         const supabase = await createClient();
 
         const { data: comments, error } = await supabase.rpc(
-            "get_comments_with_anonymous_names",
+            "get_comments_with_anonymous_names_and_replies",
             {
                 thread_id_param: threadId,
             }
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { content } = await request.json();
+        const { content, parentId } = await request.json();
 
         const { data: thread } = await supabase
             .from("threads")
@@ -106,6 +106,22 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        if (parentId) {
+            const { data: parentComment, error: parentError } = await supabase
+                .from("comments")
+                .select("id")
+                .eq("id", parentId)
+                .eq("thread_id", threadId)
+                .single();
+
+            if (parentError || !parentComment) {
+                return NextResponse.json(
+                    { error: "Parent comment not found" },
+                    { status: 404 }
+                );
+            }
+        }
+
         const { data: existingName } = await supabase
             .from("thread_anonymous_names")
             .select("anonymous_name")
@@ -137,6 +153,7 @@ export async function POST(request: NextRequest) {
                 content,
                 creator_id: user.id,
                 creator_role: courseEnrollment.role,
+                parent_id: parentId || null,
             })
             .select()
             .single();
