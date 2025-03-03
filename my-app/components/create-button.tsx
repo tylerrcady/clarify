@@ -8,16 +8,15 @@ type Props = ComponentProps<typeof Button> & {
     pendingText?: string;
 };
 
-export function SubmitButton({
+export function CreateButton({
     children,
-    pendingText = "Submitting...",
+    pendingText = "Creating...",
     ...props
 }: Props) {
     const { pending } = useFormStatus();
 
     return (
-        // use disabled not aria-disabled to actually disable the button
-        <Button type="submit" disabled={pending} {...props}>
+        <Button variant="outline" disabled={pending} {...props}>
             {pending ? pendingText : children}
         </Button>
     );

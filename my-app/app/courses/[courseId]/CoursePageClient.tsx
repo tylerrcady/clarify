@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { FormMessage, Message } from "@/components/form-message";
 import ThreadList from "./ThreadList";
 import { fetchUpdatedCourseMembers } from "@/app/actions";
+import { useRouter } from "next/navigation";
 
 export default function CoursePage({
     initialCourse,
@@ -16,11 +17,36 @@ export default function CoursePage({
     courseId: string;
 }) {
     const [isUploading, setIsUploading] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [message, setMessage] = useState<Message | null>(null);
     const [members, setMembers] = useState(initialCourse?.members || []);
     const formRef = useRef<HTMLFormElement>(null);
+    const router = useRouter();
 
     const isCreator = initialCourse?.creator_id === user?.id;
+
+    const handleDeleteCourse = async () => {
+        setIsDeleting(true);
+        try {
+            const response = await fetch(`/api/courses/${courseId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                router.push("/dashboard");
+            } else {
+                const data = await response.json();
+                setMessage({
+                    error: data.error || "Failed to delete course",
+                });
+            }
+        } catch (error) {
+            setMessage({
+                error: "An error occurred while deleting the course",
+            });
+        }
+        setIsDeleting(false);
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -120,6 +146,22 @@ export default function CoursePage({
                             )
                         )}
                     </div>
+                </div>
+                <div className="p-6 border rounded-lg">
+                    <h2 className="text-xl font-semibold mb-2">
+                        Delete Course
+                    </h2>
+                    <p className="text-sm">
+                        There is no undoing this operation.
+                    </p>
+                    <Button
+                        variant="destructive"
+                        onClick={handleDeleteCourse}
+                        className="mt-4"
+                        disabled={isDeleting}
+                    >
+                        {isDeleting ? "Deleting..." : "Delete Course"}
+                    </Button>
                 </div>
             </div>
         );

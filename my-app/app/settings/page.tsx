@@ -11,6 +11,7 @@ import {
 } from "@/app/actions";
 import Link from "next/link";
 import { FormMessage } from "@/components/form-message";
+import { CreateButton } from "@/components/create-button";
 
 interface SearchParams {
     searchParams: Promise<{ success: string; error: string }>;
@@ -229,9 +230,7 @@ export default async function Settings({ searchParams }: SearchParams) {
                             />
                         </div>
 
-                        <Button variant="outline" type="submit">
-                            Create Course
-                        </Button>
+                        <CreateButton>Create Course</CreateButton>
                     </form>
                 </div>
             )}
