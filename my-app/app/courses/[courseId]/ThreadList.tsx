@@ -270,7 +270,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                         {editThreadId != thread.id ? (
                             <div className="p-4 border rounded-lg mt-4">
                                 <div className="flex items-start">
-                                    <div className="flex-1 ml-3">
+                                    <div className="flex-1 ml-2">
                                         <div className="flex justify-between items-start">
                                             <div className="flex flex-col gap-2">
                                                 <Link
