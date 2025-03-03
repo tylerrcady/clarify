@@ -272,15 +272,15 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                 <div className="flex items-start">
                                     <div className="flex-1 ml-3">
                                         <div className="flex justify-between items-start">
-                                            <div>
+                                            <div className="flex flex-col gap-2">
                                                 <Link
                                                     href={`/courses/${courseId}/thread/${thread.id}`}
                                                 >
-                                                    <h3 className="text-lg font-medium hover:underline break-all">
+                                                    <h3 className="text-lg font-medium hover:underline break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                         {thread.title}
                                                     </h3>
                                                 </Link>
-                                                <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                     <span>
                                                         {thread.creator_role}
                                                     </span>
@@ -346,7 +346,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                         <Link
                                             href={`/courses/${courseId}/thread/${thread.id}`}
                                         >
-                                            <p className="mt-2 break-all">
+                                            <p className="mt-2 break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                 {thread.content}
                                             </p>
                                             {thread.tags &&

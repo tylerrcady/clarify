@@ -406,14 +406,15 @@ export default function ThreadDiscussion({
                                                 </div>
                                             )}
                                     </div>
-                                    <div className="text-sm text-muted-foreground mb-4 break-all">
+                                    <div className="text-sm text-muted-foreground mb-4 break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
+                                        {/* use these tailwind classes to display text in a visibly sound manner */}
                                         Posted by {thread.creator_role} •{" "}
                                         {new Date(
                                             thread.created_at
                                         ).toLocaleDateString()}
                                     </div>
                                     <div className="flex w-full flex-col">
-                                        <p className="whitespace-pre-wrap break-all">
+                                        <p className="whitespace-pre-wrap break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                             {thread.content}
                                         </p>
                                         <div className="flex w-full justify-end">
@@ -468,13 +469,13 @@ export default function ThreadDiscussion({
                                     >
                                         <div className="flex">
                                             <div className="flex-1 ml-2">
-                                                <div className="flex justify-between items-center mb-2 break-all">
+                                                <div className="flex justify-between items-center mb-2 break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                     <span className="font-medium">
                                                         {comment.anonymous_name ||
                                                             "Anonymous"}
                                                     </span>
-                                                    <div className="flex items-center gap-2 break-all">
-                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                                    <div className="flex items-center gap-2 break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
+                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                             <span>
                                                                 {
                                                                     comment.creator_role
@@ -577,7 +578,7 @@ export default function ThreadDiscussion({
                                                     </form>
                                                 ) : (
                                                     <div className="flex w-full flex-col">
-                                                        <p className="whitespace-pre-wrap break-all">
+                                                        <p className="whitespace-pre-wrap break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                             {comment.content}
                                                         </p>
                                                         <div className="flex w-full justify-between mt-2">
@@ -712,13 +713,13 @@ export default function ThreadDiscussion({
                                                                     }
                                                                     className="border rounded-lg p-4 bg-card"
                                                                 >
-                                                                    <div className="flex justify-between items-center mb-2 break-all">
+                                                                    <div className="flex justify-between items-center mb-2 break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                                         <span className="font-medium">
                                                                             {reply.anonymous_name ||
                                                                                 "Anonymous"}
                                                                         </span>
-                                                                        <div className="flex items-center gap-2 break-all">
-                                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                                                        <div className="flex items-center gap-2 break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
+                                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                                                 <span>
                                                                                     {
                                                                                         comment.creator_role
@@ -826,7 +827,7 @@ export default function ThreadDiscussion({
                                                                         </form>
                                                                     ) : (
                                                                         <div className="flex w-full flex-col">
-                                                                            <p className="whitespace-pre-wrap break-all">
+                                                                            <p className="whitespace-pre-wrap break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                                                 {
                                                                                     reply.content
                                                                                 }

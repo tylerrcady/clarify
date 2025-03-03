@@ -110,6 +110,18 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
+        const { error: repliesError } = await supabase
+            .from("comments")
+            .delete()
+            .eq("parent_id", commentId);
+
+        if (repliesError) {
+            return NextResponse.json(
+                { error: "Failed to delete replies" },
+                { status: 500 }
+            );
+        }
+
         const { error } = await supabase
             .from("comments")
             .delete()
