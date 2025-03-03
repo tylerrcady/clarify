@@ -474,11 +474,19 @@ export default function ThreadDiscussion({
                                                             "Anonymous"}
                                                     </span>
                                                     <div className="flex items-center gap-2 break-all">
-                                                        <span className="text-sm text-muted-foreground">
-                                                            {new Date(
-                                                                comment.created_at
-                                                            ).toLocaleDateString()}
-                                                        </span>
+                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                                            <span>
+                                                                {
+                                                                    comment.creator_role
+                                                                }
+                                                            </span>
+                                                            <span>•</span>
+                                                            <span>
+                                                                {new Date(
+                                                                    comment.created_at
+                                                                ).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
                                                         {currentUser ===
                                                             comment.creator_id && (
                                                             <DropdownMenu>
@@ -710,11 +718,21 @@ export default function ThreadDiscussion({
                                                                                 "Anonymous"}
                                                                         </span>
                                                                         <div className="flex items-center gap-2 break-all">
-                                                                            <span className="text-sm text-muted-foreground">
-                                                                                {new Date(
-                                                                                    reply.created_at
-                                                                                ).toLocaleDateString()}
-                                                                            </span>
+                                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground break-all">
+                                                                                <span>
+                                                                                    {
+                                                                                        comment.creator_role
+                                                                                    }
+                                                                                </span>
+                                                                                <span>
+                                                                                    •
+                                                                                </span>
+                                                                                <span>
+                                                                                    {new Date(
+                                                                                        comment.created_at
+                                                                                    ).toLocaleDateString()}
+                                                                                </span>
+                                                                            </div>
                                                                             {currentUser ===
                                                                                 reply.creator_id && (
                                                                                 <DropdownMenu>
