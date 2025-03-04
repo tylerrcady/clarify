@@ -11,6 +11,7 @@ Implement fundamental anonymized forum features such as threads, comments, and t
 #### Database Schema:
 This is the current database schema visualization for milestone 2.
 
+![database-schema-2](https://github.com/user-attachments/assets/91b48eb7-aba2-41e9-8bb3-b554089d954d)
 
 
 #### General Flow Figures:
