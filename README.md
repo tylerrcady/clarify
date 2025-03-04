@@ -41,6 +41,3 @@ This is the current database schema visualization for milestone 1.
 If you decide not to request admin privileges to view features, you can view the general flow of milestone 1 implementations below (blurred intentionally).
 
 ![demo-figures](https://github.com/user-attachments/assets/11c504dc-da2c-4405-9cd2-a366875d8560)
-
-
-
