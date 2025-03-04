@@ -8,6 +8,17 @@ information, while obfuscating current up-to-date resources.
 ### Milestone 2: Core Forum Development
 Implement fundamental anonymized forum features such as threads, comments, and tags.
 
+#### Database Schema:
+This is the current database schema visualization for milestone 2.
+
+
+
+#### General Flow Figures:
+If you decide not to request admin privileges to view features, you can view the general flow of milestone 2 implementations below (blurred intentionally).
+
+![demo-figures-2](https://github.com/user-attachments/assets/fb4c8162-870a-48bc-a329-9c000a6801b1)
+
+
 ### Milestone 1: Authentication and Enrollment
 Integrate Canvas's roster export schema for seamless course setup and user authentication.
 #### Mock Canvas Roster Export Data:
@@ -26,7 +37,7 @@ This is the current database schema visualization for milestone 1.
 
 
 #### General Flow Figures:
-If you decide not to request admin privileges to view features, you can view the general flow below (blurred intentionally).
+If you decide not to request admin privileges to view features, you can view the general flow of milestone 1 implementations below (blurred intentionally).
 
 ![demo-figures](https://github.com/user-attachments/assets/11c504dc-da2c-4405-9cd2-a366875d8560)
 
