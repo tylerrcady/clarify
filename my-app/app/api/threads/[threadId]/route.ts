@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { generateEmbedding } from "@/utils/search";
 
 export async function PUT(request: NextRequest) {
     try {
@@ -41,12 +42,15 @@ export async function PUT(request: NextRequest) {
             );
         }
 
+        const embedding = await generateEmbedding(`${title}\n${content}`);
+
         const { data: updatedThread, error } = await supabase
             .from("threads")
             .update({
                 title,
                 content,
                 tags,
+                embedding,
                 updated_at: new Date().toISOString(),
             })
             .eq("id", threadId)
