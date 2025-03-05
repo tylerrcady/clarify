@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { generateEmbedding } from "@/utils/search";
 
 export async function GET(request: NextRequest) {
     try {
@@ -35,8 +36,116 @@ export async function GET(request: NextRequest) {
 }
 
 function getRandomName(usedNames: string[]): string {
-    const adjectives = ["Quick", "Lazy", "Sleepy", "Noisy", "Hungry"];
-    const animals = ["Fox", "Dog", "Cat", "Mouse", "Bear"];
+    const adjectives = [
+        "Quick",
+        "Lazy",
+        "Sleepy",
+        "Noisy",
+        "Hungry",
+        "Brave",
+        "Calm",
+        "Eager",
+        "Fancy",
+        "Glamorous",
+        "Jolly",
+        "Kind",
+        "Lively",
+        "Mighty",
+        "Nice",
+        "Proud",
+        "Silly",
+        "Witty",
+        "Zealous",
+        "Bright",
+        "Clever",
+        "Daring",
+        "Energetic",
+        "Fierce",
+        "Gentle",
+        "Happy",
+        "Inventive",
+        "Joyful",
+        "Keen",
+        "Lucky",
+        "Mysterious",
+        "Noble",
+        "Optimistic",
+        "Playful",
+        "Quiet",
+        "Radiant",
+        "Strong",
+        "Thoughtful",
+        "Unique",
+        "Vibrant",
+        "Wise",
+        "Youthful",
+        "Zany",
+    ];
+    const animals = [
+        "Fox",
+        "Dog",
+        "Cat",
+        "Mouse",
+        "Bear",
+        "Lion",
+        "Tiger",
+        "Wolf",
+        "Eagle",
+        "Hawk",
+        "Shark",
+        "Whale",
+        "Dolphin",
+        "Panda",
+        "Koala",
+        "Leopard",
+        "Cheetah",
+        "Giraffe",
+        "Elephant",
+        "Zebra",
+        "Kangaroo",
+        "Otter",
+        "Raccoon",
+        "Squirrel",
+        "Rabbit",
+        "Frog",
+        "Turtle",
+        "Lizard",
+        "Snake",
+        "Owl",
+        "Falcon",
+        "Parrot",
+        "Penguin",
+        "Seal",
+        "Walrus",
+        "Buffalo",
+        "Bison",
+        "Moose",
+        "Deer",
+        "Antelope",
+        "Goat",
+        "Sheep",
+        "Cow",
+        "Horse",
+        "Donkey",
+        "Camel",
+        "Hippo",
+        "Rhino",
+        "Bat",
+        "Beaver",
+        "Chimpanzee",
+        "Gorilla",
+        "Orangutan",
+        "Baboon",
+        "Lemur",
+        "Meerkat",
+        "Mongoose",
+        "Porcupine",
+        "Hedgehog",
+        "Armadillo",
+        "Sloth",
+        "Anteater",
+        "Aardvark",
+    ];
 
     let name;
     do {
@@ -146,6 +255,8 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        const embedding = await generateEmbedding(content);
+
         const { data: comment, error } = await supabase
             .from("comments")
             .insert({
@@ -154,6 +265,7 @@ export async function POST(request: NextRequest) {
                 creator_id: user.id,
                 creator_role: courseEnrollment.role,
                 parent_id: parentId || null,
+                embedding,
             })
             .select()
             .single();

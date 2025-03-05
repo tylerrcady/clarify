@@ -424,9 +424,9 @@ export default function ThreadDiscussion({
                                             />
                                         </div>
                                     </div>
-                                    {/* <div>
+                                    <div>
                                         <ThreadSummary threadId={thread.id} />
-                                    </div> */}
+                                    </div>
                                 </div>
                             </div>
                         </>

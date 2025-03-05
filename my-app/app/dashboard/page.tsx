@@ -2,15 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-    LayoutDashboard,
-    BookOpen,
-    MessageSquare,
-    Plus,
-    Settings,
-    Search,
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Plus, Settings } from "lucide-react";
+import { SearchComponent } from "@/components/Search/Search";
 
 type Course = {
     id: string;
@@ -71,13 +64,6 @@ export default async function Dashboard() {
                 <div className="flex flex-col sm:flex-row h-auto sm:h-16 items-start sm:items-center px-4 py-3 sm:py-0 container mx-auto gap-3 sm:gap-0">
                     <h2 className="text-xl sm:text-2xl font-bold">Dashboard</h2>
                     <div className="flex flex-col sm:flex-row sm:ml-auto w-full sm:w-auto gap-2 sm:gap-4">
-                        <div className="relative w-full sm:w-64">
-                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search discussions..."
-                                className="pl-8"
-                            />
-                        </div>
                         <Link href={"/settings"}>
                             <Button
                                 variant="outline"
@@ -89,6 +75,9 @@ export default async function Dashboard() {
                         </Link>
                     </div>
                 </div>
+                <div className="flex flex-col sm:flex-row h-auto items-start sm:items-center px-4 py-3 sm:py-0 container mx-auto gap-3 sm:gap-0 mb-4">
+                    <SearchComponent />
+                </div>
             </div>
 
             {/* Main Content - Responsive Grid */}
@@ -97,42 +86,6 @@ export default async function Dashboard() {
                     {/* Sidebar - Collapsible on Mobile */}
                     <div className="lg:col-span-3">
                         <div className="space-y-4">
-                            {/* Navigation Section */}
-                            <div className="space-y-2">
-                                <h3 className="text-lg font-semibold">
-                                    Navigation
-                                </h3>
-                                <nav className="flex flex-row lg:flex-col gap-2">
-                                    <Button
-                                        variant="ghost"
-                                        className="justify-start flex-1 lg:flex-none"
-                                    >
-                                        <LayoutDashboard className="h-4 w-4 mr-2" />
-                                        <span className="hidden sm:inline">
-                                            Overview
-                                        </span>
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        className="justify-start flex-1 lg:flex-none"
-                                    >
-                                        <BookOpen className="h-4 w-4 mr-2" />
-                                        <span className="hidden sm:inline">
-                                            My Courses
-                                        </span>
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        className="justify-start flex-1 lg:flex-none"
-                                    >
-                                        <MessageSquare className="h-4 w-4 mr-2" />
-                                        <span className="hidden sm:inline">
-                                            Discussions
-                                        </span>
-                                    </Button>
-                                </nav>
-                            </div>
-
                             {/* Courses Section */}
                             <div className="space-y-2">
                                 <h3 className="text-lg font-semibold">
@@ -146,6 +99,7 @@ export default async function Dashboard() {
                                         <Link
                                             href={`/courses/${course.id}`}
                                             key={course.id}
+                                            className="border rounded-lg"
                                         >
                                             <Button
                                                 variant="ghost"

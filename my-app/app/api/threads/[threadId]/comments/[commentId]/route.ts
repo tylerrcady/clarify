@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { generateEmbedding } from "@/utils/search";
 
 export async function PUT(request: NextRequest) {
     try {
@@ -43,11 +44,14 @@ export async function PUT(request: NextRequest) {
             );
         }
 
+        const embedding = await generateEmbedding(content);
+
         const { data: updatedComment, error } = await supabase
             .from("comments")
             .update({
                 content,
                 updated_at: new Date().toISOString(),
+                embedding,
             })
             .eq("id", commentId)
             .select()

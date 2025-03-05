@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { generateEmbedding } from "@/utils/search";
 
 export async function GET(request: NextRequest) {
     try {
@@ -90,6 +91,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const embedding = await generateEmbedding(`${title}\n${content}`);
+
         const { data: thread, error } = await supabase
             .from("threads")
             .insert({
@@ -99,6 +102,7 @@ export async function POST(request: NextRequest) {
                 tags,
                 creator_id: user.id,
                 creator_role: courseEnrollment.role,
+                embedding,
             })
             .select()
             .single();

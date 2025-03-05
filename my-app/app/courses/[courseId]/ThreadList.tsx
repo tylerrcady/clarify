@@ -11,6 +11,7 @@ import {
     MoreVertical,
     Edit,
     Trash,
+    ChevronDown,
 } from "lucide-react";
 import { TagInput } from "@/components/TagInput";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { VoteButtons } from "@/components/VoteButtons";
 import { createClient } from "@/utils/supabase/client";
+import { SearchComponent } from "@/components/Search/Search";
 
 interface ThreadListProps {
     courseId: string;
@@ -52,6 +54,8 @@ export default function ThreadList({ courseId }: ThreadListProps) {
     const [editedThreadContent, setEditedThreadContent] = useState("");
     const [editedThreadTags, setEditedThreadTags] = useState<string[]>([]);
     const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+
+    const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
     const fetchCurrentUser = async () => {
         const supabase = createClient();
@@ -159,6 +163,14 @@ export default function ThreadList({ courseId }: ThreadListProps) {
         }
     };
 
+    const uniqueTags = Array.from(
+        new Set(threads.flatMap((thread) => thread.tags))
+    );
+
+    const filteredThreads = selectedTag
+        ? threads.filter((thread) => thread.tags.includes(selectedTag))
+        : threads;
+
     if (isLoading) {
         return (
             <div className="space-y-4">
@@ -187,8 +199,31 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                 <Button onClick={() => setShowNewThread(true)}>
                     New Thread
                 </Button>
+            </div>{" "}
+            <div className="border-b pb-4">
+                <SearchComponent courseId={courseId} />
             </div>
-
+            <div className="flex md:flex-row justify-between items-center mt-4 space-y-2 md:space-y-0">
+                <label htmlFor="tag-filter" className="text-sm font-medium">
+                    Filter by Tag:
+                </label>
+                <div className="relative">
+                    <select
+                        id="tag-filter"
+                        value={selectedTag || ""}
+                        onChange={(e) => setSelectedTag(e.target.value || null)}
+                        className="border rounded-md pl-3 pr-8 py-2 text-sm appearance-none"
+                    >
+                        <option value="">All Tags</option>
+                        {uniqueTags.map((tag) => (
+                            <option key={tag} value={tag}>
+                                {tag}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none h-4 w-4" />
+                </div>
+            </div>
             {showNewThread && (
                 <form
                     onSubmit={handleCreateThread}
@@ -263,9 +298,8 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                     </div>
                 </form>
             )}
-
             <div className="space-y-4">
-                {threads.map((thread) => (
+                {filteredThreads.map((thread) => (
                     <div key={thread.id}>
                         {editThreadId != thread.id ? (
                             <div className="p-4 border rounded-lg mt-4">
@@ -462,7 +496,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                         )}
                     </div>
                 ))}
-                {threads.length == 0 && (
+                {filteredThreads.length == 0 && (
                     <div className="text-center py-12 border rounded-lg bg-muted/20">
                         <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                         <h3 className="text-lg font-medium mb-2">

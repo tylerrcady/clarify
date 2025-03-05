@@ -91,87 +91,80 @@ export default function CoursePage({
         return null;
     }
 
-    if (isCreator) {
-        return (
-            <div className="flex-1 w-full max-w-4xl p-4 space-y-8">
-                <h1 className="text-2xl font-bold">
-                    {initialCourse.name} ({initialCourse.code})
-                </h1>
-
-                <div className="p-6 border rounded-lg">
-                    <h2 className="text-xl font-semibold mb-4">
-                        Course Enrollment
-                    </h2>
-                    <form
-                        ref={formRef}
-                        onSubmit={handleSubmit}
-                        encType="multipart/form-data"
-                    >
-                        <Input
-                            type="file"
-                            name="file"
-                            accept=".xlsx,.xls"
-                            required
-                        />
-                        <Button
-                            type="submit"
-                            className="mt-4"
-                            disabled={isUploading}
-                        >
-                            {isUploading
-                                ? "Uploading..."
-                                : "Upload Enrollment File"}
-                        </Button>
-                    </form>
-                    {message && <FormMessage message={message} />}
-                </div>
-
-                <div className="p-6 border rounded-lg">
-                    <h2 className="text-xl font-semibold mb-4">
-                        Course Members
-                    </h2>
-                    <div className="space-y-2">
-                        {members?.map(
-                            (
-                                member: { email: string; role: string },
-                                index: number
-                            ) => (
-                                <div
-                                    key={index}
-                                    className="flex flex-wrap justify-between items-center p-2 border rounded"
-                                >
-                                    <span>{member.email}</span>
-                                    <span>{member.role}</span>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </div>
-                <div className="p-6 border rounded-lg">
-                    <h2 className="text-xl font-semibold mb-2">
-                        Delete Course
-                    </h2>
-                    <p className="text-sm">
-                        There is no undoing this operation.
-                    </p>
-                    <Button
-                        variant="destructive"
-                        onClick={handleDeleteCourse}
-                        className="mt-4"
-                        disabled={isDeleting}
-                    >
-                        {isDeleting ? "Deleting..." : "Delete Course"}
-                    </Button>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="flex-1 w-full max-w-4xl p-4">
             <h1 className="text-2xl font-bold">
                 {initialCourse.name} ({initialCourse.code})
             </h1>
+            {isCreator && (
+                <div className="flex-1 w-full max-w-4xl space-y-8 mt-4 mb-4">
+                    <div className="p-6 border rounded-lg">
+                        <h2 className="text-xl font-semibold mb-4">
+                            Course Enrollment
+                        </h2>
+                        <form
+                            ref={formRef}
+                            onSubmit={handleSubmit}
+                            encType="multipart/form-data"
+                        >
+                            <Input
+                                type="file"
+                                name="file"
+                                accept=".xlsx,.xls"
+                                required
+                            />
+                            <Button
+                                type="submit"
+                                className="mt-4"
+                                disabled={isUploading}
+                            >
+                                {isUploading
+                                    ? "Uploading..."
+                                    : "Upload Enrollment File"}
+                            </Button>
+                        </form>
+                        {message && <FormMessage message={message} />}
+                    </div>
+
+                    <div className="p-6 border rounded-lg">
+                        <h2 className="text-xl font-semibold mb-4">
+                            Course Members
+                        </h2>
+                        <div className="space-y-2">
+                            {members?.map(
+                                (
+                                    member: { email: string; role: string },
+                                    index: number
+                                ) => (
+                                    <div
+                                        key={index}
+                                        className="flex flex-wrap justify-between items-center p-2 border rounded"
+                                    >
+                                        <span>{member.email}</span>
+                                        <span>{member.role}</span>
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    </div>
+                    <div className="p-6 border rounded-lg">
+                        <h2 className="text-xl font-semibold mb-2">
+                            Delete Course
+                        </h2>
+                        <p className="text-sm">
+                            There is no undoing this operation.
+                        </p>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDeleteCourse}
+                            className="mt-4"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? "Deleting..." : "Delete Course"}
+                        </Button>
+                    </div>
+                </div>
+            )}
             <ThreadList courseId={courseId} />
         </div>
     );

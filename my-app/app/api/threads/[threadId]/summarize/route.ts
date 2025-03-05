@@ -78,20 +78,21 @@ export async function GET(request: NextRequest) {
             .join("\n\n");
         const fullContent = `${threadContent}\n\n${commentsContent}`;
 
+        // prompt this as necessary
         const response = await openai.chat.completions.create({
             model: "gpt-3.5-turbo", // try to be economical here
             messages: [
                 {
                     role: "system",
                     content:
-                        "You are an educational assistant that summarizes academic discussions. Focus on key points, questions, and answers. Highlight important concepts and conclusions.",
+                        "You are an educational assistant that summarizes academic discussions. Provide a concise summary in a few sentences, focusing on the main content of the thread and key points from the comments.",
                 },
                 {
                     role: "user",
-                    content: `Please summarize the following educational thread and its comments. Extract the main question, key insights, and important conclusions:\n\n${fullContent}`,
+                    content: `Please summarize the following educational thread and its comments in a few sentences:\n\n${fullContent}`,
                 },
             ],
-            max_tokens: 500,
+            max_tokens: 150,
         });
 
         const summary = response.choices[0].message.content;
