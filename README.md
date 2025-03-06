@@ -8,6 +8,51 @@ information, while obfuscating current up-to-date resources.
 ### Milestone 2: Core Forum Development
 Implement fundamental anonymized forum features such as threads, comments, and tags.
 
+#### Example Delete Course Procedure/RPC:
+
+```
+create or replace function delete_course(course_id_param uuid)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+    -- Delete all thread votes for threads in this course
+    delete from thread_votes
+    where thread_id in (
+        select id from threads where course_id = course_id_param
+    );
+
+    -- Delete all threads in the course
+    delete from threads
+    where course_id = course_id_param;
+
+    -- Update course_enrollments to remove this course
+    update course_enrollments
+    set courses = coalesce(
+        (
+            select array_agg(c)::jsonb[]
+            from (
+                select c
+                from unnest(courses) c
+                where (c->>'courseId')::uuid != course_id_param
+            ) sub
+        ),
+        '{}'::jsonb[]
+    )
+    where exists (
+        select 1
+        from unnest(courses) c
+        where (c->>'courseId')::uuid = course_id_param
+    );
+
+    -- Finally delete the course itself
+    delete from courses
+    where id = course_id_param;
+end;
+$$;
+```
+
 #### Database Schema:
 This is the current database schema visualization for milestone 2.
 
