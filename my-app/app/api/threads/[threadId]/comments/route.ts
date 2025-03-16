@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
 }
 
 function getRandomName(usedNames: string[]): string {
+    // be careful regarding scalability
     const adjectives = [
         "Quick",
         "Lazy",
