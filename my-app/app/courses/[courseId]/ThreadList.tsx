@@ -200,36 +200,20 @@ export default function ThreadList({ courseId }: ThreadListProps) {
         <div className="space-y-4">
             <div className="flex justify-between items-center mt-2">
                 <h2 className="text-xl font-bold">Discussions</h2>
-                <Button onClick={() => setShowNewThread(true)}>
+                <Button
+                    onClick={() => {
+                        setViewMode("threadList");
+                        setShowNewThread(true);
+                    }}
+                >
                     New Thread
                 </Button>
             </div>
             <div className="border-b pb-4">
                 <SearchComponent courseId={courseId} />
             </div>
-            <div className="flex md:flex-row justify-between items-center mt-4 space-y-2 md:space-y-0">
-                <label htmlFor="tag-filter" className="text-sm font-medium">
-                    Filter by Tag:
-                </label>
-                <div className="relative">
-                    <select
-                        id="tag-filter"
-                        value={selectedTag || ""}
-                        onChange={(e) => setSelectedTag(e.target.value || null)}
-                        className="border rounded-md pl-3 pr-8 py-2 text-sm appearance-none"
-                    >
-                        <option value="">All Tags</option>
-                        {uniqueTags.map((tag) => (
-                            <option key={tag} value={tag}>
-                                {tag}
-                            </option>
-                        ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none h-4 w-4" />
-                </div>
-            </div>
             {filteredThreads.length != 0 && (
-                <div className="flex justify-end items-center mt-4">
+                <div className="flex justify-between items-center mt-4">
                     <div className="flex items-center space-x-4">
                         <label
                             htmlFor="view-mode"
@@ -237,6 +221,8 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                         >
                             View Mode:
                         </label>
+                    </div>
+                    <div>
                         <label className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -251,8 +237,35 @@ export default function ThreadList({ courseId }: ThreadListProps) {
                                 }
                                 className="form-checkbox"
                             />
-                            <span>Graph View</span>
+                            <span className="text-sm font-medium">
+                                Graph View
+                            </span>
                         </label>
+                    </div>
+                </div>
+            )}
+            {viewMode != "graph" && (
+                <div className="flex md:flex-row justify-between items-center mt-4 space-y-2 md:space-y-0">
+                    <label htmlFor="tag-filter" className="text-sm font-medium">
+                        Filter by Tag:
+                    </label>
+                    <div className="relative">
+                        <select
+                            id="tag-filter"
+                            value={selectedTag || ""}
+                            onChange={(e) =>
+                                setSelectedTag(e.target.value || null)
+                            }
+                            className="border rounded-md pl-3 pr-8 py-2 text-sm appearance-none"
+                        >
+                            <option value="">All Tags</option>
+                            {uniqueTags.map((tag) => (
+                                <option key={tag} value={tag}>
+                                    {tag}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none h-4 w-4" />
                     </div>
                 </div>
             )}
