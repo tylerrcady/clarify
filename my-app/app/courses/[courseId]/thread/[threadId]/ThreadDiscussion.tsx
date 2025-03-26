@@ -225,6 +225,7 @@ export default function ThreadDiscussion({
                 const { thread: updatedThread } = await response.json();
                 setThread(updatedThread);
                 setIsEditingThread(false);
+                fetchComments();
             } else {
                 const error = await response.json();
                 console.error("Error updating thread:", error);
