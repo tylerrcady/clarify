@@ -28,13 +28,17 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        if (courseId) {
-            const { data: enrollment } = await supabase
-                .from("course_enrollments")
-                .select("courses")
-                .eq("email", user.email)
-                .single();
+        const { data: enrollment } = await supabase
+            .from("course_enrollments")
+            .select("courses")
+            .eq("email", user.email)
+            .single();
 
+        const enrolledCourseIds =
+            enrollment?.courses.map((c: { courseId: string }) => c.courseId) ||
+            [];
+
+        if (courseId) {
             const courseEnrollment = enrollment?.courses.find(
                 (c: { courseId: string }) => c.courseId === courseId
             );
@@ -55,6 +59,7 @@ export async function GET(request: NextRequest) {
                 similarity_threshold: 0.3, // modify the similarity threshold here (lower is more generalized) [default: 0.7]
                 match_count: 20,
                 course_filter: courseId || null,
+                allowed_courses: courseId ? null : enrolledCourseIds,
             });
             if (error) throw error;
             results = data;
@@ -63,6 +68,7 @@ export async function GET(request: NextRequest) {
                 search_query: query,
                 match_count: 20,
                 course_filter: courseId || null,
+                allowed_courses: courseId ? null : enrolledCourseIds,
             });
             if (error) throw error;
             results = data;
