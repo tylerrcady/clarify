@@ -5,6 +5,33 @@ to stray from current leaders like Piazza and Ed Discussion, which abandon older
 information, while obfuscating current up-to-date resources.
 ## Milestones
 
+### Milestone 3: AI Summarization and Search
+Implement AI-driven summarization for threads and enhance search capabilities.
+
+#### Database Schema:
+The database schema for milesone 3 is the same as the database schema for milestone 2.
+
+
+#### Example of Features:
+If you decide not to request admin privileges to view features, you can view a general example of milestone 3 features below.
+
+> AI-Summarization (generated from thread and comment content):
+
+![image](https://github.com/user-attachments/assets/89dbeee1-2e8f-4999-a5e8-4360935533ee)
+
+> Full-text Search:
+
+![image](https://github.com/user-attachments/assets/fdb7ba58-a164-4872-9a33-3cfc1557a822)
+
+> Semantic Search (notice how a thread appears that doesn't contain the search word):
+
+![image](https://github.com/user-attachments/assets/0971089b-ed61-44ea-b6c7-beb8b01d0f58)
+
+> Tag Filters:
+
+![image](https://github.com/user-attachments/assets/751b2be2-2fd0-480f-87ed-b7746b01cdde)
+
+
 ### Milestone 2: Core Forum Development
 Implement fundamental anonymized forum features such as threads, comments, and tags.
 
