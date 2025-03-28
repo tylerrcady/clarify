@@ -1,8 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
-const SIMILARITY_THRESHOLD = 0.85; // ! alter this accordingly
-
 interface Thread {
     id: string;
     title: string;
@@ -18,6 +16,11 @@ interface GraphNode {
     threads: Thread[];
     centroid_id: string; // first thread is the centroid
 }
+
+// note: added new batch similarities function that is infinitely quicker (one RPC call versus many)
+
+const SIMILARITY_THRESHOLD = 0.6;
+const LINK_THRESHOLD = 0.5;
 
 export async function GET(request: NextRequest) {
     try {
@@ -40,59 +43,85 @@ export async function GET(request: NextRequest) {
 
         if (error) throw error;
 
-        const nodes: GraphNode[] = [];
+        if (!threads.length) return NextResponse.json({ nodes: [], links: [] });
+
+        // ! updated to batch function (one call versus many)
+        const threadIds = threads.map((t) => t.id);
+        const { data: similarities, error: similarityError } =
+            await supabase.rpc("batch_get_thread_similarities", {
+                thread_ids: threadIds,
+            });
+
+        if (similarityError) throw similarityError;
+
+        const nodes = [];
+        const threadToNode = new Map();
 
         for (const thread of threads) {
             let assigned = false;
-
             for (const node of nodes) {
-                const { data: similarity, error: similarityError } =
-                    await supabase.rpc("get_thread_similarity", {
-                        thread1_id: thread.id,
-                        thread2_id: node.centroid_id,
-                    });
-
-                if (similarityError) throw similarityError;
+                const similarity = similarities.find(
+                    (s: {
+                        thread1_id: string;
+                        thread2_id: string;
+                        similarity: number;
+                    }) =>
+                        (s.thread1_id === thread.id &&
+                            s.thread2_id === node.centroid_id) ||
+                        (s.thread2_id === thread.id &&
+                            s.thread1_id === node.centroid_id)
+                )?.similarity;
 
                 if (similarity >= SIMILARITY_THRESHOLD) {
                     node.threads.push(thread);
                     node.size++;
+                    threadToNode.set(thread.id, node.id);
                     assigned = true;
                     break;
                 }
             }
 
             if (!assigned) {
-                nodes.push({
+                const newNode: GraphNode = {
                     id: `node_${nodes.length}`,
                     size: 1,
                     threads: [thread],
                     centroid_id: thread.id,
-                });
+                };
+                nodes.push(newNode);
+                threadToNode.set(thread.id, newNode.id);
             }
         }
 
-        const links = [];
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                const { data: similarity, error: similarityError } =
-                    await supabase.rpc("get_thread_similarity", {
-                        thread1_id: nodes[i].centroid_id,
-                        thread2_id: nodes[j].centroid_id,
-                    });
+        const centroidIds = nodes.map((n) => n.centroid_id);
+        const { data: centroidSimilarities, error: centroidSimilarityError } =
+            await supabase.rpc("batch_get_thread_similarities", {
+                thread_ids: centroidIds,
+            });
 
-                if (similarityError) throw similarityError;
+        if (centroidSimilarityError) throw centroidSimilarityError;
 
-                if (similarity > 0.5) {
-                    // ! adjust this as needed
-                    links.push({
-                        source: nodes[i].id,
-                        target: nodes[j].id,
-                        value: similarity,
-                    });
-                }
-            }
+        interface Link {
+            source: string;
+            target: string;
+            value: number;
         }
+
+        const links: Link[] = centroidSimilarities
+            .filter(
+                (s: { similarity: number }) => s.similarity > LINK_THRESHOLD
+            )
+            .map(
+                (s: {
+                    thread1_id: string;
+                    thread2_id: string;
+                    similarity: number;
+                }) => ({
+                    source: threadToNode.get(s.thread1_id) as string,
+                    target: threadToNode.get(s.thread2_id) as string,
+                    value: s.similarity,
+                })
+            );
 
         return NextResponse.json({ nodes, links });
     } catch (error) {
