@@ -4,7 +4,7 @@ import uuid
 import datetime
 import openai
 import json
-from supabase import create_client
+from supabase import create_client # type: ignore
 from bs4 import BeautifulSoup
 from typing import List
 from dotenv import load_dotenv
@@ -58,7 +58,7 @@ for i, (tag, post_list) in enumerate(tag_post_map.items()):
             "embedding": generate_embedding(f"{post.get('Title', '')}\n{BeautifulSoup(post.get('Body', ''), features="html.parser").get_text()}")
         }
         threads.append(thread)
-    if i == 0: break
+    if i == 0: break # for testing
 
 response = supabase.table("threads").insert(threads).execute()
 print(response)

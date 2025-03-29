@@ -363,19 +363,19 @@ export default function KnowledgeGraph({ courseId }: KnowledgeGraphProps) {
                     className="p-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-md shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     title="Reset Zoom"
                 >
-                    reset
+                    Reset
                 </button>
                 <button
                     onClick={toggleGraphType}
                     className="p-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-md shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     title="Toggle Graph Type"
                 >
-                    {graphType === "force" ? "bubble" : "force"}
+                    {graphType === "force" ? "Bubble" : "Force"}
                 </button>
             </div>
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-                    <div className="bg-card rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
                         <button
                             onClick={() => setIsModalOpen(false)}
                             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
