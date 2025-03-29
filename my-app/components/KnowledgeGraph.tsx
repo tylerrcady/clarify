@@ -293,6 +293,16 @@ export default function KnowledgeGraph({ courseId }: KnowledgeGraphProps) {
             }
         };
 
+        if (svgRef.current && zoomRef.current) {
+            // added to reset zoom when changing graph type
+            d3.select(svgRef.current)
+                .transition()
+                .call(
+                    zoomRef.current.transform,
+                    d3.zoomIdentity.translate(0, 0).scale(1)
+                );
+        }
+
         if (graphType === "force") {
             renderForceDirectedGraph(graphData);
         } else {
