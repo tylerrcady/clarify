@@ -17,6 +17,8 @@ If you decide not to request admin privileges to view features, you can view a g
 
 > Knowledge Graph:
 
+---
+
 ### Milestone 3: AI Summarization and Search
 Implement AI-driven summarization for threads and enhance search capabilities.
 
@@ -43,6 +45,7 @@ If you decide not to request admin privileges to view features, you can view a g
 
 ![image](https://github.com/user-attachments/assets/751b2be2-2fd0-480f-87ed-b7746b01cdde)
 
+---
 
 ### Milestone 2: Core Forum Development
 Implement fundamental anonymized forum features such as threads, comments, and tags.
@@ -103,6 +106,7 @@ If you decide not to request admin privileges to view features, you can view the
 
 ![demo-figures-2](https://github.com/user-attachments/assets/fb4c8162-870a-48bc-a329-9c000a6801b1)
 
+---
 
 ### Milestone 1: Authentication and Enrollment
 Integrate Canvas's roster export schema for seamless course setup and user authentication.
