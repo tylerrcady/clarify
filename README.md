@@ -5,6 +5,18 @@ to stray from current leaders like Piazza and Ed Discussion, which abandon older
 information, while obfuscating current up-to-date resources.
 ## Milestones
 
+### Milestone 4: Knowledge Graphs
+Develop and integrate topical knowledge graphs for improved information visualization.
+
+#### Database Schema:
+The database schema for milesone 4 is the same as the database schema for milestone 3 (apart from updated RPCs).
+
+
+#### Example of Features:
+If you decide not to request admin privileges to view features, you can view a general example of milestone 4 features below.
+
+> Knowledge Graph:
+
 ### Milestone 3: AI Summarization and Search
 Implement AI-driven summarization for threads and enhance search capabilities.
 
