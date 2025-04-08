@@ -15,7 +15,25 @@ The database schema for milesone 4 is the same as the database schema for milest
 #### Example of Features:
 If you decide not to request admin privileges to view features, you can view a general example of milestone 4 features below.
 
-> Knowledge Graph:
+> View Mode Toggle:
+
+![image](https://github.com/user-attachments/assets/c713524b-f685-41ca-9c97-3544f220b256)
+
+> Force Knowledge Graph (not shown: mobile responsive & information appears upon hovering over nodes):
+
+![image](https://github.com/user-attachments/assets/d06e12dc-b3df-4884-9947-f2deca86319a)
+
+> Bubble Knowledge Graph (not shown: mobile responsive & information appears upon hovering over nodes):
+
+![image](https://github.com/user-attachments/assets/659aaa00-16db-4b05-b13d-ee0594bf8ba1)
+
+> Knowledge Graph Controls (i.e. zoom, reset, & toggle graph type):
+
+![image](https://github.com/user-attachments/assets/0041bf5c-1107-4b5f-b13b-463030d8b994)
+
+> Node Navigation Modal:
+
+![image](https://github.com/user-attachments/assets/2861ec57-2708-4bb8-b839-8830ffeffcc5)
 
 ---
 
