@@ -1,18 +1,16 @@
-Useful files:
+### Useful files:
+- Badges.csv: Id,UserId,Name,Date,Class,TagBased
+- Comments.csv: Id,PostId,Score,Text,CreationDate,UserId,ContentLicense
+- PostHistory.csv: Id,PostHistoryTypeId,PostId,RevisionGUID,CreationDate,UserId,Text,ContentLicense
+- PostLinks.csv: Id,CreationDate,PostId,RelatedPostId,LinkTypeId
+- Posts.csv: Id,PostTypeId,AcceptedAnswerId,CreationDate,Score,ViewCount,Body,OwnerUserId,LastEditorUserId,LastEditDate,LastActivityDate,Title,Tags,AnswerCount,CommentCount,ContentLicense
+- Tags.csv: Id,TagName,Count,ExcerptPostId,WikiPostId
+- Users.csv: Id,Reputation,CreationDate,DisplayName,LastAccessDate,Location,AboutMe,Views,UpVotes,DownVotes,AccountId
+- Votes.csv: Id,PostId,VoteTypeId,CreationDate
 
-Badges.csv: Id,UserId,Name,Date,Class,TagBased
-Comments.csv: Id,PostId,Score,Text,CreationDate,UserId,ContentLicense
-PostHistory.csv: Id,PostHistoryTypeId,PostId,RevisionGUID,CreationDate,UserId,Text,ContentLicense
-PostLinks.csv: Id,CreationDate,PostId,RelatedPostId,LinkTypeId
-Posts.csv: Id,PostTypeId,AcceptedAnswerId,CreationDate,Score,ViewCount,Body,OwnerUserId,LastEditorUserId,LastEditDate,LastActivityDate,Title,Tags,AnswerCount,CommentCount,ContentLicense
-Tags.csv: Id,TagName,Count,ExcerptPostId,WikiPostId
-Users.csv: Id,Reputation,CreationDate,DisplayName,LastAccessDate,Location,AboutMe,Views,UpVotes,DownVotes,AccountId
-Votes.csv: Id,PostId,VoteTypeId,CreationDate
+### Useful tables:
 
-Useful tables:
-
-threads:
-
+#### threads:
 -   id: uuid (automatic)
 -   course_id: uuid
 -   title: text
@@ -24,8 +22,7 @@ threads:
 -   updated_at: timestamptz
 -   embedding: vector
 
-comments:
-
+#### comments:
 -   id: uuid (automatic)
 -   thread_id: uuid
 -   content: text
@@ -36,7 +33,7 @@ comments:
 -   parent_id: uuid (just make NULL)
 -   embedding: vector
 
-courses: (MANUALLY CREATE FOR DATA POPULATION)
+#### courses: (MANUALLY CREATE FOR DATA POPULATION)
 
 Order of implementation:
 
