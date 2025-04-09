@@ -3,7 +3,6 @@ import csv
 import uuid
 import datetime
 import openai
-import json
 from supabase import create_client # type: ignore
 from bs4 import BeautifulSoup
 from typing import List

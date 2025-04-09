@@ -19,7 +19,7 @@ interface GraphNode {
 
 // note: added new batch similarities function that is infinitely quicker (one RPC call versus many)
 
-const SIMILARITY_THRESHOLD = 0.6;
+const SIMILARITY_THRESHOLD = 0.55;
 const LINK_THRESHOLD = 0.5;
 
 export async function GET(request: NextRequest) {
