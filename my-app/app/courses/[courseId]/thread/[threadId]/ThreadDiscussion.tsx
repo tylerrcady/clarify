@@ -723,7 +723,7 @@ export default function ThreadDiscussion({
                                                                             <div className="flex items-center gap-2 text-sm text-muted-foreground break-words [word-break:normal] [overflow-wrap:anywhere] hyphens-auto">
                                                                                 <span>
                                                                                     {
-                                                                                        comment.creator_role
+                                                                                        reply.creator_role
                                                                                     }
                                                                                 </span>
                                                                                 <span>
@@ -731,7 +731,7 @@ export default function ThreadDiscussion({
                                                                                 </span>
                                                                                 <span>
                                                                                     {new Date(
-                                                                                        comment.created_at
+                                                                                        reply.created_at
                                                                                     ).toLocaleDateString()}
                                                                                 </span>
                                                                             </div>

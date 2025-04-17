@@ -112,7 +112,6 @@ export default function CoursePage({
                                 name="file"
                                 accept=".xlsx,.xls"
                                 required
-                                className="hover:cursor-pointer"
                             />
                             <Button
                                 type="submit"
