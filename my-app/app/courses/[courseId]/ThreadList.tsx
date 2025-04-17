@@ -63,7 +63,7 @@ export default function ThreadList({ courseId }: ThreadListProps) {
 
     // ! added for pagination in milestone 5
     const [currentPage, setCurrentPage] = useState(1);
-    const threadsPerPage = 10;
+    const threadsPerPage = 5;
 
     const fetchCurrentUser = async () => {
         const supabase = createClient();
