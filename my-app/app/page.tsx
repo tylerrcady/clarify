@@ -121,7 +121,15 @@ export default async function Home() {
                         </div>
                         <div className="bg-muted p-6 rounded-lg">
                             <p className="text-center text-sm text-gray-500 dark:text-gray-300">
-                                Platform Preview Coming Soon
+                                Platform Preview{" "}
+                                <a
+                                    href="https://github.com/tylerrcady/clarify/blob/main/final-report.pdf"
+                                    target="_blank"
+                                    className="text-blue-500 underline hover:text-blue-700"
+                                >
+                                    Live
+                                </a>
+                                !
                             </p>
                         </div>
                     </div>
