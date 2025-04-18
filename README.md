@@ -5,3 +5,4 @@ to stray from current leaders like Piazza and Ed Discussion, which abandon older
 information, while obfuscating current up-to-date resources.
 
 #### Finalized Documentation: [Final Report](https://github.com/tylerrcady/clarify/blob/main/final-report.pdf)
+#### Live Deployment: [Site Link](https://clarify-4365.vercel.app/)
